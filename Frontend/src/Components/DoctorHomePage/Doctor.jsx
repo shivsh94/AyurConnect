@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+// import { NavLink } from "react-router-dom";
 import img from "../../assets/doc.png";
 import RequestedAppointments from "./Requested";
 import PatientList from "./PatientList";
@@ -54,30 +54,12 @@ function Doctor() {
   return (
     <div className="bg-black">
       {/* Navbar */}
-      <div className="fixed top-0 left-0 right-0 z-10 flex items-center p-3 justify-between bg-black text-white">
-        <div className="pl-10">
-          <img width={80} height={80} src="./logo.png" alt="logo" className="rounded-full " />
-        </div>
-        <div className="flex gap-5 text-[20px] pr-16 tracking-wider">
-          {["Home", "Dashboard", "Patient List", "Patient History", "Blog"].map((item, index) => (
-            <NavLink
-              to={`/${item.toLowerCase().replace(/\s/g, "-")}`}
-              key={index}
-              className="hover:text-green-300 hover:underline hover:scale-105 transition-transform duration-200 ease-in-out"
-            >
-              {item}
-            </NavLink>
-          ))}
-          <div className="text-1xl">
-            <NavLink to="/user">Doctor's Name</NavLink>
-          </div>
-        </div>
-      </div>
+
 
       {/* Main Content */}
-      <div className="w-full h-full flex mt-24 bg-black">
+      <div className="w-full h-full flex mt-28 bg-black">
         {/* Doctor details */}
-        <div className="bg-black w-1/4 h-screen fixed mt">
+        <div className="bg-black w-1/4 h-screen">
           <div className="flex flex-col items-center justify-center pt-10 gap-5 ">
             <img width={150} height={150} src={img} alt="" />
             <h1>{doctorDetails.name}</h1>
