@@ -11,6 +11,7 @@ import AboutUs from './Components/PatientHomePage/AboutUs';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import DocHome from './Components/DoctorHomePage/DocHome';
+import DoctorProfile from './Components/Profile/doctorProfile';
 
 
 function App() {
@@ -20,11 +21,17 @@ function App() {
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/SignIn" element={<SignIn />} />
         <Route path="/registration" element={<Registrarion />} />
+        {/* <Route path="/Profile/:id" element={<DoctorProfile />} /> */}
+
+        <Route path="/Profile/*" element={<Home />}>
+          <Route path=":id" element={<DoctorProfile />} />
+        </Route>
         
         {/* Parent route for Patient */}
         <Route path="/Patient/*" element={<Home />}>
           <Route path="dashboard" element={<PatientHome/>} />
           <Route path="about-us" element={<AboutUs />} />
+
           {/* <Route path="video" element={<Video/>} /> */}
         </Route>
 

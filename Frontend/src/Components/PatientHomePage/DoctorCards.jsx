@@ -1,6 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; 
 
-function DoctorCard({ name, degree, experience, specialty, image }) {
+function DoctorCard({ name, degree, experience, specialty, image,id }) {
+
+
+  const navigate = useNavigate();
+
+  const handleViewProfileClick = () => {
+    navigate(`/Profile/${id}`); 
+  };
+
+
+
   return (
     <div className="bg-black shadow-md rounded-lg overflow-hidden border border-yellow-200 hover:border-yellow-300 hover:scale-105 flex">
       {/* Profile Image Section */}
@@ -26,7 +37,7 @@ function DoctorCard({ name, degree, experience, specialty, image }) {
           <button className="bg-green-600 hover:bg-green-700 hover:scale-105 text-white font-bold py-2 px-4 rounded-md transition duration-300">
             Book Appointment
           </button>
-          <button className="bg-gray-200 hover:bg-gray-300 hover:scale-105 text-gray-800 font-bold py-2 px-4 rounded-md transition duration-300">
+          <button onClick={handleViewProfileClick}  className="bg-gray-200 hover:bg-gray-300 hover:scale-105 text-gray-800 font-bold py-2 px-4 rounded-md transition duration-300">
             View Profile
           </button>
         </div>
@@ -39,6 +50,7 @@ function DoctorCard({ name, degree, experience, specialty, image }) {
 function DoctorsList() {
   const doctors = [
     {
+      id:"1",
       name: "Dr. John Doe",
       degree: "MBBS, MD",
       experience: 15,
@@ -52,6 +64,7 @@ function DoctorsList() {
       image: "https://randomuser.me/api/portraits/men/1.jpg",
     },
     {
+      id:"2",
       name: "Dr. Jane Smith",
       degree: "MBBS, MS",
       experience: 10,
@@ -65,6 +78,7 @@ function DoctorsList() {
       image: "https://randomuser.me/api/portraits/women/2.jpg",
     },
     {
+      id:"3",
       name: "Dr. Alex Johnson",
       degree: "MBBS, MCh",
       experience: 20,
@@ -78,7 +92,6 @@ function DoctorsList() {
       specialty: "Pediatrics",
       image: "https://randomuser.me/api/portraits/women/4.jpg",
     },
-     
   ];
 
   return (
@@ -91,6 +104,7 @@ function DoctorsList() {
           experience={doctor.experience}
           specialty={doctor.specialty}
           image={doctor.image}
+          id={doctor.id}
         />
       ))}
     </div>

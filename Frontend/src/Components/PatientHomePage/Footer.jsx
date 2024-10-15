@@ -10,7 +10,7 @@ function Footer() {
           <div className="flex flex-col items-center">
             <h1 className="font-bold text-2xl mb-7">Quick Links</h1>
             
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 items-start">
               <NavLink to="/about-us" className="hover:text-green-500">
                 About Us
               </NavLink>
@@ -28,7 +28,7 @@ function Footer() {
               </NavLink>
             </div>
           </div>
-          <div className="flex flex-col space-y-4 mt-14">
+          <div className="flex flex-col space-y-4 mt-14 items-start">
             <NavLink to="/home" className="hover:text-green-500">
               Home
             </NavLink>
@@ -43,7 +43,7 @@ function Footer() {
               Testimonials
             </NavLink>
           </div>
-          <div className="flex flex-col space-y-4 mt-14">
+          <div className="flex flex-col space-y-4 mt-14 items-start">
             <NavLink to="/support" className="hover:text-green-500">
               Support
             </NavLink>
@@ -57,13 +57,13 @@ function Footer() {
               Cancellation & Refund
             </NavLink>
           </div>
-          <div className="flex flex-col space-y-4 mt-14">
+          <div className="flex flex-col space-y-4 mt-14 items-start">
             <h1>Contact Detail</h1>
             <p>Phone: 1234567890</p>
             <p>Email:ayurconnect@gmail.com</p>
             <h1>Follow Us: </h1>
           </div>
-          <div className="flex flex-col space-y-4 mt-14 mr-10">
+          <div className="flex flex-col space-y-4 mt-14 mr-10 items-start">
             <h1>Registered Address:</h1>
             <h1>3/196 Viram Khand, Gomti Nagar,</h1>
             <h1>Lucknow-226010,Uttar Pradesh, India</h1>

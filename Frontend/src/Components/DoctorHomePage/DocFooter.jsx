@@ -10,7 +10,7 @@ function DocFooter() {
           <div className="flex flex-col items-center">
             <h1 className="font-bold text-2xl mb-7">Quick Links</h1>
             
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 items-start">
               <NavLink to="/about-us" className="hover:text-green-500">
                 About Us
               </NavLink>
