@@ -9,12 +9,12 @@ function Registrarion() {
 
   return (
     <div
-      className="w-full h-full relative pb-20 bg-fixed  bg-cover bg-no-repeat bg-center"
+      className="w-full h-full relative pb-20 bg-fixed bg-transparent bg-cover bg-no-repeat bg-center"
       style={{
         backgroundImage: `url(${bg})`,
       }}
     >
-      <div className="sm:w-full h-52 flex items-center  justify-around gap-5">
+      <div className="sm:w-full h-52 flex items-center bg-transparent justify-around gap-5">
         <img
           width={110}
           height={95}
@@ -22,7 +22,7 @@ function Registrarion() {
           src={"./logo.svg"}
           alt=""
         />
-        <h1 className="text-3xl font-bold text-white sm:text-5xl">
+        <h1 className="text-3xl font-bold bg-transparent text-white sm:text-5xl">
           Welcome to AyurConnect
         </h1>
         <img
@@ -33,16 +33,16 @@ function Registrarion() {
         />
       </div>
 
-      <div className="flex items-center justify-evenly mb-16">
+      <div className="flex items-center bg-transparent justify-evenly mb-16">
         <div
           onClick={() => setForm("patient")}
-          className="text-2xl cursor-pointer border border-blue-200 rounded-full p-4 bg-slate-200 font-medium"
+          className="text-2xl cursor-pointer border border-blue-200 rounded-full p-4 bg-slate-200 text-black font-medium"
         >
           Register as a Patient
         </div>
         <div
           onClick={() => setForm("doctor")}
-          className="text-2xl cursor-pointer border border-blue-200 rounded-full p-4 bg-slate-200 font-medium"
+          className="text-2xl cursor-pointer border border-blue-200 rounded-full p-4 bg-slate-200 text-black font-medium"
         >
           Register as a Doctor
         </div>

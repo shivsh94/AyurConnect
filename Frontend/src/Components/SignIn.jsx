@@ -2,14 +2,14 @@ import React from "react";
 
 function SignIn() {
   return (
-    <div className="w-full h-[100vh] bg-[#1A3636] flex items-center justify-center ">
-      <div className="w-full md:w-[60vh] h-[70vh] bg-[#1A3636]  px-10 md:px-0">
+    <div className="w-full h-[100vh] bg-black flex items-center justify-center ">
+      <div className="w-full md:w-[60vh] h-[70vh] bg-black  px-10 md:px-0">
         <h1 className="text-4xl font-medium text-white tracking-tighter mb-4">Sign in</h1>
         <h3 className="text-white font-medium text-sm">
           See your growth and get consulting support!
         </h3>
-        <button className="flex items-center justify-center border gap-2 rounded-full w-full py-2 mt-10 bg-indigo-100 hover:bg-indigo-300 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
-        <div className="bg-white p-2  rounded-full">
+        <button className="flex items-center justify-center border gap-2 rounded-full w-full py-2 mt-10 bg-indigo-100 hover:bg-indigo-300 transition-all duration-300 ease-in-out focus:shadow-outline focus:outline-none">
+        <div className="bg-black p-2  rounded-full">
                       <svg className="w-4" viewBox="0 0 533.5 544.3">
                         <path
                           d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
@@ -29,7 +29,7 @@ function SignIn() {
                         />
                       </svg>
                     </div>
-          <a className="whitespace-nowrap " href="http://localhost:8000/auth/google">Sign in with Google</a>
+          <a className="whitespace-nowrap bg-transparent text-black" href="http://localhost:8000/auth/google">Sign in with Google</a>
         </button>
         <div className="flex mt-6 items-center">
           <div className="w-1/4 h-[1px] bg-slate-300"></div>
