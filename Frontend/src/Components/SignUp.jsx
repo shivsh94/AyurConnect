@@ -1,6 +1,47 @@
 import React from "react";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function SignUp() {
+
+  const [user, setUser] = useState({
+    email: "",
+    // otp: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const navigate = useNavigate();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+       const res = await axios.post(`http://localhost:5143/api/v1/user/signup`, user,{
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+       });
+       
+       if (res.data.success) {
+          navigate("/SignIn");
+         toast.success(res.data.message);
+         }
+
+    } catch (error) {
+      console.log(error); 
+      toast.error("error.response.data.message");
+    }
+    setUser({
+      email: "",
+      // otp: "",
+      password: "",
+      confirmPassword: "",
+    });
+    };
+
   return (
     <div>
       <div className="min-h-screen bg-black text-gray-900 flex justify-center">
@@ -45,14 +86,16 @@ function SignUp() {
               </div>
 
               <div className=" max-w-full bg-black">
-                <input
-                  className="w-full px-8 py-4 rounded-full  font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                <input 
+                value={user.email} 
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                  className="w-full px-8 py-4 rounded-full  font-medium bg-gray-100 border text-black border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                   type="email"
                   placeholder="Email"
                 />
                 <div className="w-full h-fit grid grid-cols-3 bg-black mt-5">
                   <input
-                    className="w-full col-span-2 px-8 py-4 rounded-l-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 border-r-0 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                    className="w-full col-span-2 px-8 py-4 rounded-l-full font-medium text-black bg-gray-100 border border-gray-200 placeholder-gray-500 border-r-0 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                     type="text"
                     placeholder="Otp"
                   />
@@ -61,11 +104,20 @@ function SignUp() {
                   </button>
                 </div>
                 <input
-                  className="w-full px-8 py-4 rounded-full font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+                value={user.password} 
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                  className="w-full px-8 py-4 rounded-full font-medium text-black bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                   type="password"
                   placeholder="Password"
                 />
-                <button className="mt-5 tracking-wide font-semibold     bg-indigo-500 text-gray-100 w-full py-4 rounded-full hover:bg-indigo-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+                <input
+                value={user.confirmPassword}
+                onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
+                  className="w-full px-8 py-4 rounded-full text-black font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+                  type="password"
+                  placeholder="Confirm Password"
+                />
+                <button onClick={onSubmit} className="mt-5 tracking-wide font-semibold  bg-indigo-500 text-gray-100 w-full py-4 rounded-full hover:bg-indigo-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
                   <svg
                     className="w-6 h-6 -ml-2 bg-transparent"
                     fill="none"

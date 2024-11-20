@@ -1,6 +1,47 @@
 import React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+
 
 function SignIn() {
+
+  const [user, setUser] = useState({
+    email: "",
+    // otp: "",
+    password: "",
+  });
+
+  const navigate = useNavigate();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+       const res = await axios.post(`http://localhost:5143/api/v1/user/signin`, user,{
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+       });
+       
+       if (res.data.success) {
+          navigate("/registration");
+         toast.success(res.data.message);
+         }
+
+    } catch (error) {
+      console.log(error); 
+      toast.error("error.response.data.message");
+    }
+    setUser({
+      email: "",
+      // otp: "",
+      password: "",
+    });
+    };
+
+
   return (
     <div className="w-full h-[100vh] bg-black flex items-center justify-center ">
       <div className="w-full md:w-[60vh] h-[70vh] bg-black  px-10 md:px-0">
@@ -37,15 +78,19 @@ function SignIn() {
           <div className="w-1/4 h-[1px] bg-slate-300"></div>
         </div>
         <div>
-          <form action="">
+          <form onSubmit={onSubmit} action="">
             <input
+            value={user.email}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
               type="email"
-              className="border w-full  rounded-full pl-6 p-3 mt-4"
+              className="border w-full text-black rounded-full pl-6 p-3 mt-4"
               placeholder="Email"
             />
             <input
+            value={user.password}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
               type="password"
-              className="border w-full rounded-full pl-6 p-3 mt-4"
+              className="border w-full text-black rounded-full pl-6 p-3 mt-4"
               placeholder="Password"
             />
             <div className="flex  mt-5 justify-between items-center">
@@ -59,7 +104,7 @@ function SignIn() {
                 </a>
               </div>
             </div>
-            <button className="w-full bg-indigo-500 rounded-full  text-white p-2 mt-4  hover:bg-indigo-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none ">
+            <button type="submit" className="w-full bg-indigo-500 rounded-full  text-white p-2 mt-4  hover:bg-indigo-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none ">
               Sign in
             </button>
           </form>

@@ -12,10 +12,7 @@ const userModel = new mongoose.Schema({
     //     createdAt: Date,
     //     expiresAt: Date
     // },
-    // isVerified: {
-    //     type: Boolean,
-    //     default: false
-    // },
+    
     password: {
         type: String,
         required: true,

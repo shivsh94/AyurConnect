@@ -2,8 +2,8 @@
  import EmailVerification from "../models/EmailVerification.js";
  import userModel from "../models/userModel.js";
 
-const sendEmailVerificationOTP = async (_req, user) => {
-   
+const sendEmailVerificationOTP = async (req, user) => {
+    const {email}  = req.body;
     const otp = Math.floor(1000 + Math.random() * 9000);
 
     //Save the otp in the database

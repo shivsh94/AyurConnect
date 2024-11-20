@@ -3,7 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
+*body{
     background-color: black;
-    color: white;
+    color: black;
+    
 }
