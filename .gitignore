@@ -10,3 +10,4 @@ build/
 
 # Environment variables
 .env
+Backend/.env
