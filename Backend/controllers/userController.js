@@ -51,26 +51,23 @@ export const SignIn = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    console.log("a");
-    
     // Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User does not exist", success: false });
     }
     // Compare password
-    console.log("b");
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" , success: false});
     }
 
-    console.log("c");
     // Generate JWT
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "7d",
     });
-    console.log("d");
+
     return res.status(200).cookie("token", token).json({ _id: user._id, message: "User signed in successfully", success: true });
 
   } catch (error) {

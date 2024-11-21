@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
 
 function SignUp() {
   const [user, setUser] = useState({
@@ -10,16 +11,19 @@ function SignUp() {
     password: "",
     confirmPassword: "",
   });
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [Guser, setGUser] = useState(null);
 
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (user.password !== user.confirmPassword && (!user.password)) {
+    if (user.password !== user.confirmPassword && !user.password) {
       toast.error("Passwords do not match");
     }
-    if(!user.email){
-      toast.error("Email is required")
+    if (!user.email) {
+      toast.error("Email is required");
     }
     try {
       const res = await axios.post(
@@ -48,6 +52,31 @@ function SignUp() {
     }
   };
 
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => setGUser(codeResponse),
+    onError: (error) => console.log('Login Failed:', error)
+});
+
+  useEffect(
+    () => {
+        if (Guser) {
+            axios
+                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${Guser?.credential}`, {
+                    headers: {
+                        Authorization: `${Guser.credential}`,
+                        Accept: 'application/json'
+                    }
+                })
+                .then((res) => {
+                    setProfile(res.data);
+                    console.log(res.data);
+                })
+                .catch((err) => console.log(err));
+        }
+    },
+    [ Guser ]
+);
+
   return (
     <div>
       <div className="min-h-screen bg-black text-gray-900 flex justify-center">
@@ -58,7 +87,9 @@ function SignUp() {
             </h1>
             <div className="w-full flex-1 bg-black bg-transparent mt-8">
               <div className="flex flex-col items-center bg-black">
-                <button className="w-full font-bold shadow-sm rounded-full bg-black py-3 bg-indigo-100 text-gray-800 flex items-center justify-center hover:bg-indigo-300 transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
+                <button
+                onClick={() => login()}
+                className="w-full font-bold shadow-sm rounded-full bg-black py-3 bg-indigo-100 text-gray-800 flex items-center justify-center hover:bg-indigo-300 transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                   <div className="  p-2 rounded-full bg-black">
                     <svg
                       className="w-4 bg-transparent"
@@ -87,6 +118,7 @@ function SignUp() {
                   </span>
                 </button>
               </div>
+              {/* <GoogleLogin onSuccess={responseMessage} onError={errorMessage} /> */}
 
               <div className="flex mt-6 justify-center items-center bg-black">
                 <div className="w-full  h-[1px]   bg-black"></div>

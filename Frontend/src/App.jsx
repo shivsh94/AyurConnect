@@ -14,7 +14,6 @@ import DocHome from './Components/DoctorHomePage/DocHome';
 import DoctorProfile from './Components/Profile/doctorProfile';
 import OtpPage from './Components/Otp';
 
-
 function App() {
   return (
     <BrowserRouter>
