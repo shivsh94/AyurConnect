@@ -16,7 +16,7 @@ function SignIn() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        `http://localhost:5143/api/v1/user/signin`,
+        `${import.meta.env.VITE_API_URL}/api/v1/user/signin`,
         user,
         {
           headers: {

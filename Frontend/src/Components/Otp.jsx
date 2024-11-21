@@ -22,7 +22,7 @@ function OtpPage() {
         return;
       }
       const res = await axios.post(
-        `http://localhost:5143/api/v1/user/check-otp`,
+        `${import.meta.env.VITE_API_URL}/api/v1/user/check-otp`,
         { otp, email: userEmail },
         {
           headers: {
@@ -49,7 +49,7 @@ function OtpPage() {
     try {
       // Simulate an API call for sending OTP
       await axios.post(
-        `http://localhost:5143/api/v1/user/send-otp`,
+        `${import.meta.env.VITE_API_URL}/api/v1/user/send-otp`,
         { email: userEmail },
         {
           headers: {
