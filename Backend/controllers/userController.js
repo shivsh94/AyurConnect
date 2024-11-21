@@ -24,7 +24,7 @@ export const Signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create new user
-    const Nuser = await User.create({
+    const newUser = await User.create({
       email,
       // otp,
       password: hashedPassword,
@@ -32,6 +32,7 @@ export const Signup = async (req, res) => {
     });
     return res.json({ message: "User signed up successfully",
         success: true,
+        user: newUser,
      });
     // sendEmailVerificationOTP(req, User);
   } catch (error) {

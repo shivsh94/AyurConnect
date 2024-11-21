@@ -8,7 +8,7 @@ function SignUp() {
 
   const [user, setUser] = useState({
     email: "",
-    // otp: "",
+    otp: "",
     password: "",
     confirmPassword: "",
   });
@@ -31,7 +31,7 @@ function SignUp() {
          }
 
     } catch (error) {
-      console.log(error); 
+      // console.log(error); 
       toast.error("error.response.data.message");
     }
     setUser({
@@ -53,7 +53,7 @@ function SignUp() {
             <div className="w-full flex-1 bg-black bg-transparent mt-8">
               <div className="flex flex-col items-center bg-black">
                 <button className="w-full font-bold shadow-sm rounded-full bg-black py-3 bg-indigo-100 text-gray-800 flex items-center justify-center hover:bg-indigo-300 transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
-                  <div className="bg-white p-2 rounded-full bg-black">
+                  <div className="  p-2 rounded-full bg-black">
                     <svg className="w-4 bg-transparent" viewBox="0 0 533.5 544.3">
                       <path
                         d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
@@ -78,7 +78,7 @@ function SignUp() {
               </div>
 
               <div className="flex mt-6 justify-center items-center bg-black">
-                <div className="w-full  h-[1px] bg-slate-300 bg-black"></div>
+                <div className="w-full  h-[1px]   bg-black"></div>
                 <h4 className="p-4 shrink-0 text-gray-300 bg-black tracking-tighter">
                   or Sign in with Email
                 </h4>
