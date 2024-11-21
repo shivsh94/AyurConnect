@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
 const patientRegistration = new mongoose.Schema({
-   "Patient's name": {
+   PatientName: {
         type: String,
         required: true
     },
-    "phone no": {
+    phoneNo: {
         type: Number,
         required: true
     },
@@ -37,14 +37,14 @@ const patientRegistration = new mongoose.Schema({
         type:String,
         required:true
     },
-    "Any medical history": {
+    AnyMedicalHistory: {
         type: String,
         // required: true
     },
-    "Any previous report": {
+    AnyPreviousReport: {
         type: String,
         // required: true
         }
     });
     
-export default mongoose.model("patientRegistration", patientRegistration);
+export default mongoose.model("PatientRegistration", patientRegistration);

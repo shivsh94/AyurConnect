@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Doctor from "./Doctor";
 import Patients from "./Patients";
-import bg from "../../../public/bg.jpg";
+// import bg from "../../../public/bg.jpg";
  
 
 function Registrarion() {
@@ -10,16 +10,16 @@ function Registrarion() {
   return (
     <div
       className="w-full h-full relative pb-20 bg-fixed bg-transparent bg-cover bg-no-repeat bg-center"
-      style={{
-        backgroundImage: `url(${bg})`,
-      }}
+      // style={{
+      //   backgroundImage: `url(${bg})`,
+      // }}
     >
       <div className="sm:w-full h-52 flex items-center bg-transparent justify-around gap-5">
         <img
           width={110}
           height={95}
           className="rounded-full sm:w-30 sm:h-30"
-          src={"./logo.svg"}
+          src={"./logo.png"}
           alt=""
         />
         <h1 className="text-3xl font-bold bg-transparent text-white sm:text-5xl">
@@ -48,7 +48,7 @@ function Registrarion() {
         </div>
       </div>
 
-      <div  className="w-1/2 h-full rounded-lg py-8 px-5 translate-x-1/2">
+      <div  className="w-1/2 h-full text-black rounded-lg py-8 px-5 translate-x-1/2">
         {form === "patient" ? <Patients /> : <Doctor />}
       </div>
     </div>

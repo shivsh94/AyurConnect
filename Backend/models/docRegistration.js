@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const docRegistration = new mongoose.Schema({
+const doctorSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -37,10 +37,11 @@ const docRegistration = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  "upload your certificate": {
+  uploadYourCertificate: {
     type: String,
     required: true,
   },
 });
 
-export default mongoose.model("docRegistration", docRegistration);
+const Doctor = mongoose.model("Doctor", doctorSchema);
+export default Doctor;

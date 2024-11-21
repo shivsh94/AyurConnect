@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const userModel = new mongoose.Schema({
     email: {
@@ -12,7 +12,7 @@ const userModel = new mongoose.Schema({
     //     createdAt: Date,
     //     expiresAt: Date
     // },
-    
+
     password: {
         type: String,
         required: true,
@@ -22,6 +22,14 @@ const userModel = new mongoose.Schema({
         type: String,
         // required: true,
         hide: true
+    },
+    patientDetails:{
+        type: Schema.Types.ObjectId,
+        ref: 'patientRegistration'
+    },
+    doctorDetails:{
+        type: Schema.Types.ObjectId,
+        ref: 'doctorRegistration'
     }
 });
 
