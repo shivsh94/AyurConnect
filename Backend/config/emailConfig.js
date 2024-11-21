@@ -3,7 +3,7 @@ dotenv.config({});
 import nodemailer from "nodemailer";
 
 const transport = nodemailer.createTransport({
-    host: process.env.EMAIL_SMTP,
+    host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     secure: false,
     auth: {

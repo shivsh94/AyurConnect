@@ -6,13 +6,14 @@ const userModel = new mongoose.Schema({
         required: true,
         unique: true
     },
-    // otp: {
-    //     type: String,
-    //     required: true,
-    //     createdAt: Date,
-    //     expiresAt: Date
-    // },
-
+    otp: {
+        type: String,
+        expires: 300 // 5 minutes
+    },
+    isVerified:{
+        type: Boolean,
+        default: false
+    },
     password: {
         type: String,
         required: true,

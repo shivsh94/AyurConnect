@@ -5,10 +5,8 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function SignUp() {
-
   const [user, setUser] = useState({
     email: "",
-    otp: "",
     password: "",
     confirmPassword: "",
   });
@@ -17,30 +15,38 @@ function SignUp() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (user.password !== user.confirmPassword && (!user.password)) {
+      toast.error("Passwords do not match");
+    }
+    if(!user.email){
+      toast.error("Email is required")
+    }
     try {
-       const res = await axios.post(`http://localhost:5143/api/v1/user/signup`, user,{
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-       });
-       
-       if (res.data.success) {
-          navigate("/SignIn");
-         toast.success(res.data.message);
-         }
+      const res = await axios.post(
+        `http://localhost:5143/api/v1/user/signup`,
+        user,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
 
+      if (res.data.success) {
+        navigate("/otp", { state: { email: user.email } });
+        toast.success(res.data.message);
+      }
+      setUser({
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
     } catch (error) {
-      // console.log(error); 
+      // console.log(error);
       toast.error("error.response.data.message");
     }
-    setUser({
-      email: "",
-      // otp: "",
-      password: "",
-      confirmPassword: "",
-    });
-    };
+  };
 
   return (
     <div>
@@ -54,7 +60,10 @@ function SignUp() {
               <div className="flex flex-col items-center bg-black">
                 <button className="w-full font-bold shadow-sm rounded-full bg-black py-3 bg-indigo-100 text-gray-800 flex items-center justify-center hover:bg-indigo-300 transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                   <div className="  p-2 rounded-full bg-black">
-                    <svg className="w-4 bg-transparent" viewBox="0 0 533.5 544.3">
+                    <svg
+                      className="w-4 bg-transparent"
+                      viewBox="0 0 533.5 544.3"
+                    >
                       <path
                         d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
                         fill="#4285f4"
@@ -73,7 +82,9 @@ function SignUp() {
                       />
                     </svg>
                   </div>
-                  <span className="ml-4 bg-transparent text-gray-600">Sign Up with Google</span>
+                  <span className="ml-4 bg-transparent text-gray-600">
+                    Sign Up with Google
+                  </span>
                 </button>
               </div>
 
@@ -86,14 +97,14 @@ function SignUp() {
               </div>
 
               <div className=" max-w-full bg-black">
-                <input 
-                value={user.email} 
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                <input
+                  value={user.email}
+                  onChange={(e) => setUser({ ...user, email: e.target.value })}
                   className="w-full px-8 py-4 rounded-full  font-medium bg-gray-100 border text-black border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                   type="email"
                   placeholder="Email"
                 />
-                <div className="w-full h-fit grid grid-cols-3 bg-black mt-5">
+                {/* <div className="w-full h-fit grid grid-cols-3 bg-black mt-5">
                   <input
                     className="w-full col-span-2 px-8 py-4 rounded-l-full font-medium text-black bg-gray-100 border border-gray-200 placeholder-gray-500 border-r-0 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                     type="text"
@@ -102,22 +113,29 @@ function SignUp() {
                   <button className=" rounded-r-full text-white     bg-indigo-500 border border-l-0 border-indigo-400  hover:bg-indigo-600 transition-all duration-300 ease-in-out">
                     Get OTP
                   </button>
-                </div>
+                </div> */}
                 <input
-                value={user.password} 
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                  value={user.password}
+                  onChange={(e) =>
+                    setUser({ ...user, password: e.target.value })
+                  }
                   className="w-full px-8 py-4 rounded-full font-medium text-black bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                   type="password"
                   placeholder="Password"
                 />
                 <input
-                value={user.confirmPassword}
-                onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
+                  value={user.confirmPassword}
+                  onChange={(e) =>
+                    setUser({ ...user, confirmPassword: e.target.value })
+                  }
                   className="w-full px-8 py-4 rounded-full text-black font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                   type="password"
                   placeholder="Confirm Password"
                 />
-                <button onClick={onSubmit} className="mt-5 tracking-wide font-semibold  bg-indigo-500 text-gray-100 w-full py-4 rounded-full hover:bg-indigo-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+                <button
+                  onClick={onSubmit}
+                  className="mt-5 tracking-wide font-semibold  bg-indigo-500 text-gray-100 w-full py-4 rounded-full hover:bg-indigo-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                >
                   <svg
                     className="w-6 h-6 -ml-2 bg-transparent"
                     fill="none"
@@ -133,7 +151,9 @@ function SignUp() {
                   <span className="ml-3 bg-transparent">Sign Up</span>
                 </button>
                 <div className="mt-5 text-white bg-transparent">
-                  <span className="bg-transparent">Already have an account ?</span>
+                  <span className="bg-transparent">
+                    Already have an account ?
+                  </span>
                   <a
                     href="/SignIn"
                     className=" bg-transparent text-indigo-300 hover:text-indigo-400 transition-all duration-300 ease-in-out ml-2"
@@ -142,14 +162,14 @@ function SignUp() {
                   </a>
                 </div>
                 <p className="mt-6 text-xs text-gray-400 text-center bg-transparent">
-                  I agree to abide by templatana's 
+                  I agree to abide by templatana's
                   <a
                     href="#"
                     className="border-b bg-black border-gray-300 border-dotted"
                   >
-                     Terms of Service
+                    Terms of Service
                   </a>
-                  and its 
+                  and its
                   <a
                     href="#"
                     className="border-b bg-black border-gray-300 border-dotted"
@@ -167,5 +187,3 @@ function SignUp() {
 }
 
 export default SignUp;
-
- 

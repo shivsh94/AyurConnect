@@ -12,6 +12,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import DocHome from './Components/DoctorHomePage/DocHome';
 import DoctorProfile from './Components/Profile/doctorProfile';
+import OtpPage from './Components/Otp';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/SignIn" element={<SignIn />} />
+        <Route path="/otp" element={<OtpPage />} />
         <Route path="/registration" element={<Registrarion />} />
         {/* <Route path="/Profile/:id" element={<DoctorProfile />} /> */}
 
