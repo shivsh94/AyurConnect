@@ -13,11 +13,13 @@ import "slick-carousel/slick/slick-theme.css";
 import DocHome from './Components/DoctorHomePage/DocHome';
 import DoctorProfile from './Components/Profile/doctorProfile';
 import OtpPage from './Components/Otp';
+import Homepage from './Components/Home/Homepage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+      <Route path="/" element={<Homepage />} />
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/SignIn" element={<SignIn />} />
         <Route path="/otp" element={<OtpPage />} />
