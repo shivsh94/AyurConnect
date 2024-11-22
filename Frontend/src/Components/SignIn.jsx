@@ -15,6 +15,9 @@ function SignIn() {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
+      if(!user.email || !user.password){
+        return toast.error("Please fill all the fields");
+      }
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/user/signin`,
         user,
