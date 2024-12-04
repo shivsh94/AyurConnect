@@ -1,4 +1,7 @@
 import Doctor from "../models/docRegistration.js";
+import cookie from "cookie-parser";
+
+
 
 const doctorRegistration = async (req, res) => {
   try {
@@ -14,8 +17,11 @@ const doctorRegistration = async (req, res) => {
       Experience,
       uploadYourCertificate,
     } = req.body;
-    const {userId} = cookie.parse(req.headers.cookie);
-
+    const {userId} =(req.headers.cookie);
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: User ID missing" });
+    }
+    
     if (
       !name ||
       !phone ||
@@ -45,9 +51,10 @@ const doctorRegistration = async (req, res) => {
     const currentDoctor = await newDocRegistration.save();
     console.log(currentDoctor);
     
-    res.status(200).json({ message: "Doctor Registered Successfully" });
+    res.status(200).json({ message: "Doctor Registered Successfully", data: currentDoctor });
   } catch (error) {
-    console.log(error);
+    console.error("Error in doctor registration:", error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
 export default doctorRegistration;
