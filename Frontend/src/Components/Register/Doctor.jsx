@@ -1,7 +1,29 @@
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 
 function Doctor() {
+  
+const [formData, setFormData] = useState({
+    name: "",
+    gender: "",
+    age: "",
+    licenseNumber: "",
+    yearsOfExperience: "",
+    phoneNumber: "",
+    address: "",
+    speciality: "",
+    hospitalName: "",
+    certification: "",
+});
+
+const handleChange = (e) =>{
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+}
+
   return (
     <motion.div initial={{ x: "100vw", width: 0 }}   
     animate={{ x: 0, width: "100%" }}  
@@ -10,6 +32,9 @@ function Doctor() {
         <div className="flex flex-col gap-3">
           <label className="font-medium text-gray-100">Name</label>
           <input
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
             className="border border-blue-200 rounded-full p-3 bg-slate-200 font-medium"
             type="text"
             placeholder="Enter your Name"

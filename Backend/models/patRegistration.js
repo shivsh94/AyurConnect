@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const patientRegistration = new mongoose.Schema({
+const patRegistration = new mongoose.Schema({
    PatientName: {
         type: String,
         required: true
@@ -31,11 +31,11 @@ const patientRegistration = new mongoose.Schema({
     },
     gender :{
         type:String,
-        required:true
+        // required:true
     },
     disease :{
         type:String,
-        required:true
+        // required:true
     },
     AnyMedicalHistory: {
         type: String,
@@ -47,4 +47,4 @@ const patientRegistration = new mongoose.Schema({
         }
     });
     
-export default mongoose.model("PatientRegistration", patientRegistration);
+export default mongoose.model("Patients", patRegistration);

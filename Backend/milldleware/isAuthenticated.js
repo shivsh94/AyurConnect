@@ -1,13 +1,17 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 const isAuthenticated = (req, res, next) => {
   try {
-    const token = req.cookies?.token; 
+    const token = req.cookies?.token || req.headers?.authorization ;
+    //  console.log(token);
+     
     if (!token) {
       return res.status(401).json({ message: "Access denied. No token provided." });
     }
 
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     req.user = decoded;
 

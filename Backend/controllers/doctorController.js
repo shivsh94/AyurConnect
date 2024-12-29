@@ -17,10 +17,11 @@ const doctorRegistration = async (req, res) => {
       Experience,
       uploadYourCertificate,
     } = req.body;
-    const {userId} =(req.headers.cookie);
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized: User ID missing" });
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: User not login" });
     }
+
     
     if (
       !name ||
@@ -36,7 +37,8 @@ const doctorRegistration = async (req, res) => {
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    const newDocRegistration = new Doctor({
+    
+const newDocRegistration = new Doctor({
       name,
       phone,
       address,
