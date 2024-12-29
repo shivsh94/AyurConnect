@@ -52,30 +52,30 @@ function SignUp() {
     }
   };
 
-  const login = useGoogleLogin({
-    onSuccess: (codeResponse) => setGUser(codeResponse),
-    onError: (error) => console.log('Login Failed:', error)
-});
+//   const login = useGoogleLogin({
+//     onSuccess: (codeResponse) => setGUser(codeResponse),
+//     onError: (error) => console.log('Login Failed:', error)
+// });
 
-  useEffect(
-    () => {
-        if (Guser) {
-            axios
-                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${Guser?.credential}`, {
-                    headers: {
-                        Authorization: `${Guser.credential}`,
-                        Accept: 'application/json'
-                    }
-                })
-                .then((res) => {
-                    setProfile(res.data);
-                    console.log(res.data);
-                })
-                .catch((err) => console.log(err));
-        }
-    },
-    [ Guser ]
-);
+//   useEffect(
+//     () => {
+//         if (Guser) {
+//             axios
+//                 .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${Guser?.credential}`, {
+//                     headers: {
+//                         Authorization: `${Guser.credential}`,
+//                         Accept: 'application/json'
+//                     }
+//                 })
+//                 .then((res) => {
+//                     setProfile(res.data);
+//                     console.log(res.data);
+//                 })
+//                 .catch((err) => console.log(err));
+//         }
+//     },
+//     [ Guser ]
+// );
 
   return (
     <div>
@@ -88,7 +88,7 @@ function SignUp() {
             <div className="w-full flex-1 bg-black bg-transparent mt-8">
               <div className="flex flex-col items-center bg-black">
                 <button
-                onClick={() => login()}
+                // onClick={() => login()}
                 className="w-full font-bold shadow-sm rounded-full bg-black py-3 bg-indigo-100 text-gray-800 flex items-center justify-center hover:bg-indigo-300 transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                   <div className="  p-2 rounded-full bg-black">
                     <svg
