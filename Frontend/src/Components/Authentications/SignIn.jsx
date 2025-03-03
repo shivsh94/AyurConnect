@@ -134,7 +134,7 @@ function SignIn() {
           <div className="mt-5 text-white">
             <span>Not Registered yet?</span>
             <a
-              href="/SignUp"
+              href="/signup"
               className="text-indigo-300 hover:text-indigo-400 transition-all duration-300 ease-in-out ml-2"
             >
               Create an Account

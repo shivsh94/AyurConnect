@@ -15,19 +15,15 @@ export const Signup = async (req, res) => {
     if (!email || !password || !confirmPassword) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    // Check if password and confirmPassword match
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
-    // Check if email already exists
     const user = await User.findOne({ email });
     if (user) {
       return res.status(200).json({ message: "User already exists" });
     }
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create new user
     const newUser = await User.create({
       email,
       // otp,
@@ -83,43 +79,6 @@ export const SignOut = async (req, res) => {
     console.log(error);
     } 
     };
-
-// export const ForgotPassword = async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     // Check if email exists
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return res.status(400).json({ message: "User does not exist" });
-//     }
-//     // Generate OTP
-//     // Send OTP to email
-
-//     sendEmailVerificationOTP(req, User);
-//     res.json({ message: "OTP sent to your email" });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-// export const ResetPassword = async (req, res) => {
-//   try {
-//     const { otp, newPassword } = req.body;
-//     // Check if OTP is valid
-//     const user = await User.findOne({ otp });
-//     if (!user) {
-//       return res.status(400).json({ message: "Invalid OTP" });
-//     }
-//     // Hash password
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
-//     // Update password
-//     user.password = hashedPassword;
-//     await user.save;
-//     res.json({ message: "Password updated successfully" });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
 
 export const sendEmailVerificationOTP = async (req, res) => {
   try {

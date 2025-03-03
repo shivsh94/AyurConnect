@@ -17,8 +17,8 @@ app.use(cookieParser());
 
 // CORS Configuration
 const corsOptions = {
-  origin: process.env.CLIENT_URL || "http://localhost:5173", // Use env variable or default to localhost
-  credentials: true, // Allow cookies
+  origin: process.env.CLIENT_URL || "http://localhost:5173", 
+  credentials: true, 
 };
 
 app.use(cors(corsOptions));

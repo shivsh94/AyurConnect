@@ -1,27 +1,27 @@
 import './App.css';
-import Home from "./Components/PatientHomePage/Home";
+import Home from "./pages/PatientHomePage/Home";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import SignIn from './Components/SignIn';
-import SignUp from './Components/SignUp';
-import Registrarion from  './Components/Register/Registrarion';
-import Doctor from './Components/DoctorHomePage/Doctor';
+import SignIn from './Components/Authentications/SignIn';
+import SignUp from './Components/Authentications/SignUp';
+import Registrarion from  './Components/Authentications/Register/Registrarion';
+import Doctor from './pages/DoctorHomePage/Doctor';
 // import Video from './Components/PatientHomePage/Video';
-import PatientHome from './Components/PatientHomePage/PatientHome';
-import AboutUs from './Components/PatientHomePage/AboutUs';
+import PatientHome from './pages/PatientHomePage/PatientHome';
+import AboutUs from './pages/PatientHomePage/AboutUs';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import DocHome from './Components/DoctorHomePage/DocHome';
+import DocHome from './pages/DoctorHomePage/DocHome';
 import DoctorProfile from './Components/Profile/doctorProfile';
-import OtpPage from './Components/Otp';
-import Homepage from './Components/Home/Homepage';
+import OtpPage from './Components/Authentications/Otp';
+import Homepage from './pages/Home/Homepage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
       <Route path="/" element={<Homepage />} />
-        <Route path="/SignUp" element={<SignUp />} />
-        <Route path="/SignIn" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<SignIn />} />
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/registration" element={<Registrarion />} />
         {/* <Route path="/Profile/:id" element={<DoctorProfile />} /> */}

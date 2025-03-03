@@ -187,7 +187,7 @@ function SignUp() {
                     Already have an account ?
                   </span>
                   <a
-                    href="/SignIn"
+                    href="/login"
                     className=" bg-transparent text-indigo-300 hover:text-indigo-400 transition-all duration-300 ease-in-out ml-2"
                   >
                     Sign in
