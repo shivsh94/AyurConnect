@@ -7,13 +7,13 @@ import isAuthenticated from "../milldleware/isAuthenticated.js";
 
 const router = express.Router();
 
-router.route("/signup").post(Signup);
-router.route("/signin").post(SignIn);
-router.route("/signout").get(SignOut);
-router.route("/doctor-registration").post(isAuthenticated,doctorRegistration); 
-router.route("/patients-registration").post(isAuthenticated,patientsRegistration); 
-router.route("/send-otp").post(sendEmailVerificationOTP);
-router.route("/check-otp").post(verifyEmail);
+router.post("/signup", Signup);
+router.post("/signin", SignIn);
+router.post("/signout", SignOut);
+router.post("/sendEmailVerificationOTP", sendEmailVerificationOTP);
+router.post("/verifyEmail", verifyEmail);
+router.post("/doctorRegistration",isAuthenticated, doctorRegistration);
+router.post("/patientsRegistration",isAuthenticated, patientsRegistration);
 
 
 
