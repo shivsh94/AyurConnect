@@ -6,29 +6,27 @@ import { toast } from "react-hot-toast";
 function Patients() {
   const [form, setForm] = useState({
     PatientName: "",
-    // gender: "",
     age: "",
-    // Problem: "",
-    // AnyMedicalHistory: "",
     phoneNo: "",
     address: "",
     height: "",
     weight: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+ 
     if (
       !form.PatientName ||
-      // !form.gender ||
       !form.age ||
-      // !form.Problem ||
       !form.phoneNo ||
       !form.address ||
       !form.height ||
@@ -38,7 +36,15 @@ function Patients() {
       return;
     }
 
+     
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(form.phoneNo)) {
+      toast.error("Invalid Phone Number! Must be 10 digits & start from 6-9.");
+      return;
+    }
+ 
     try {
+      setLoading(true);
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/user/patientsRegistration`,
         form,
@@ -47,12 +53,10 @@ function Patients() {
 
       if (res.data.success) {
         toast.success("Patient Registered Successfully!");
+ 
         setForm({
           PatientName: "",
-          // gender: "",
           age: "",
-          // Problem: "",
-          // AnyMedicalHistory: "",
           phoneNo: "",
           address: "",
           height: "",
@@ -61,7 +65,11 @@ function Patients() {
       }
     } catch (error) {
       console.error("Error in Patient registration:", error);
-      toast.error("Failed to register patient.");
+      toast.error(
+        error.response?.data?.message || "Failed to register patient."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,21 +94,6 @@ function Patients() {
               placeholder="Enter your Name"
             />
 
-            {/* <label className="font-medium text-gray-100">Gender</label>
-            <select
-              className="border border-blue-200 text-slate-400 rounded-full p-3 bg-slate-200 font-medium"
-              name="gender"
-              value={form.gender}
-              onChange={handleChange}
-            >
-              <option value="" disabled>
-                Select your gender
-              </option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select> */}
-
             <label className="font-medium text-gray-100">Age</label>
             <input
               className="border border-blue-200 rounded-full p-3 bg-slate-200 font-medium"
@@ -110,31 +103,8 @@ function Patients() {
               onChange={handleChange}
               placeholder="Enter your Age"
             />
-{/* 
-            <label className="font-medium text-gray-100">Problem</label>
-            <input
-              className="border border-blue-200 rounded-full p-3 bg-slate-200 font-medium"
-              type="text"
-              name="Problem"
-              value={form.Problem}
-              onChange={handleChange}
-              placeholder="Enter your Problem"
-            /> */}
-
-            {/* <label className="font-medium text-gray-100">
-              Any Medical History
-            </label>
-            <input
-              className="border border-blue-200 rounded-full p-3 bg-slate-200 font-medium"
-              type="text"
-              name="AnyMedicalHistory"
-              value={form.AnyMedicalHistory}
-              onChange={handleChange}
-              placeholder="Enter your Medical History"
-            /> */}
           </div>
-
-          {/* Right Side */}
+ 
           <div className="flex flex-col gap-3">
             <label className="font-medium text-gray-100">Phone Number</label>
             <input
@@ -156,24 +126,24 @@ function Patients() {
               placeholder="Enter your Address"
             />
 
-            <label className="font-medium text-gray-100">Height</label>
+            <label className="font-medium text-gray-100">Height (ft)</label>
             <input
               className="border border-blue-200 rounded-full p-3 bg-slate-200 font-medium"
               type="number"
               name="height"
               value={form.height}
               onChange={handleChange}
-              placeholder="Enter your Height in feet"
+              placeholder="Height (in Feet)"
             />
 
-            <label className="font-medium text-gray-100">Weight</label>
+            <label className="font-medium text-gray-100">Weight (Kg)</label>
             <input
               className="border border-blue-200 rounded-full p-3 bg-slate-200 font-medium"
               type="number"
               name="weight"
               value={form.weight}
               onChange={handleChange}
-              placeholder="Enter your Weight in Kg"
+              placeholder="Weight (in Kg)"
             />
           </div>
         </div>
@@ -182,9 +152,12 @@ function Patients() {
         <div className="w-full flex justify-center mt-4">
           <button
             type="submit"
-            className="border border-blue-200 rounded-2xl p-4 bg-slate-200 font-medium hover:bg-indigo-200 hover:font-bold transition-all duration-300 ease-in-out"
+            className={`border border-blue-200 rounded-2xl p-4 bg-slate-200 font-medium transition-all duration-300 ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-indigo-200"
+            }`}
+            disabled={loading}
           >
-            Submit
+            {loading ? "Registering..." : "Submit"}
           </button>
         </div>
       </form>

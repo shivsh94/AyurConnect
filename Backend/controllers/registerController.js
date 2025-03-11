@@ -61,52 +61,55 @@ export const doctorRegistration = async (req, res) => {
   }
 };
 
+
 export const patientsRegistration = async (req, res) => {
   try {
-    
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized: User not logged in" });
     }
 
-    
-    const {
-      PatientName,
-      phoneNo,
-      address,
-      age,
-      height,
-      weight,
-      // bloodgroup,
-    } = req.body;
- 
+    const { PatientName, phoneNo, address, age, height, weight } = req.body;
+
     if (!PatientName || !phoneNo || !address || !age || !height || !weight) {
-      return res.status(400).json({ message: "All required fields must be filled." });
+      return res.status(400).json({ message: "All fields are required." });
     }
 
-    
-    const phoneRegex = /^[0-9]{10}$/; // Example for a 10-digit phone number
-    if (!phoneRegex.test(phoneNo)) {
-      return res.status(400).json({ message: "Invalid phone number format." });
+    // ✅ Step 1: Check if the user already registered the patient
+    const existingPatient = await Patients.findOne({ userId: req.user._id });
+
+    if (existingPatient) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already registered a patient. You cannot register again.",
+        data: existingPatient
+      });
     }
 
-    // Create a new patient record
-    const newPatientsRegistration = new Patients({
+    // ✅ Step 2: If no patient exists, then create a new one
+    const newPatient = new Patients({
       PatientName,
       phoneNo,
       address,
       age,
       height,
       weight,
-      // bloodgroup,
+      userId: req.user._id,
     });
 
-    const savedPatient = await newPatientsRegistration.save();
+    await newPatient.save();
 
-    res.status(201).json({success: true,message: "Patient registered successfully",
-      data: savedPatient,
+    res.status(201).json({
+      success: true,
+      message: "Patient registered successfully",
+      data: newPatient,
     });
+
   } catch (error) {
     console.error("Error in patient registration:", error);
-    res.status(500).json({success: false,message: "Internal Server Error", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message
+    });
   }
 };

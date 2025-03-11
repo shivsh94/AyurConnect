@@ -13,18 +13,17 @@ function PatientHome() {
   };
 
   const [searchTerm, setSearchTerm] = useState("");
-  // Filter the desease based on the search term
 
   return (
     <div>
-      {/* Main Content Section */}
+  
       <div className=" px-16 mt-5">
         <ImageCarousel />
       </div>
       <div className="w-full flex flex-col items-center justify-start bg-black">
-        {/* Search and Sort/Filter Section */}
+         
         <div className="w-11/12 px-5 py-7 grid grid-cols-6 gap-5 place-items-center place-content-start">
-          {/* Search Bar */}
+           
           <div className="relative col-span-4 w-full">
             <input
               type="text"
@@ -49,7 +48,7 @@ function PatientHome() {
             </div>
           </div>
 
-          {/* Sort Button with Dropdown */}
+           
           <div className="relative w-full">
             <button
               className="text-lg border border-yellow-300 rounded-md px-2 py-2 pr-28"
@@ -73,8 +72,7 @@ function PatientHome() {
               </div>
             )}
           </div>
-
-          {/* Filter Button */}
+          
           <div className="w-full">
             <button className="text-lg border border-yellow-300 rounded-md px-2 py-2 pr-28">
               Filter

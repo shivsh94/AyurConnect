@@ -30,7 +30,7 @@ function SignIn() {
       );
 
       if (res.data.success) {
-        navigate("/registration");
+        navigate("/patient/dashboard");
         toast.success(res.data.message);
       }
     } catch (error) {

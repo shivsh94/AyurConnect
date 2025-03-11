@@ -25,7 +25,7 @@ const patRegistration = new mongoose.Schema({
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'   // ✅ Connect to User Model
+        ref: 'User'   
     }
 });
 
