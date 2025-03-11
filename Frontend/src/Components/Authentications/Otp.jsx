@@ -22,7 +22,7 @@ function OtpPage() {
         return;
       }
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/v1/user/check-otp`,
+        `${import.meta.env.VITE_API_URL}/api/v1/user/verifyEmail`,
         { otp, email: userEmail },
         {
           headers: {

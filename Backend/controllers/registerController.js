@@ -63,12 +63,12 @@ export const doctorRegistration = async (req, res) => {
 
 export const patientsRegistration = async (req, res) => {
   try {
-    // Check if the user is authenticated
+    
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized: User not logged in" });
     }
 
-    // Destructure request body
+    
     const {
       PatientName,
       phoneNo,
@@ -76,17 +76,14 @@ export const patientsRegistration = async (req, res) => {
       age,
       height,
       weight,
-      bloodgroup,
-      AnyMedicalHistory = "", // Default to empty string if not provided
-      AnyPreviousReport = "",
+      // bloodgroup,
     } = req.body;
-
-    // Validate required fields
-    if (!PatientName || !phoneNo || !address || !age || !height || !weight || !bloodgroup) {
+ 
+    if (!PatientName || !phoneNo || !address || !age || !height || !weight) {
       return res.status(400).json({ message: "All required fields must be filled." });
     }
 
-    // Validate phone number (optional: Adjust regex as per your region)
+    
     const phoneRegex = /^[0-9]{10}$/; // Example for a 10-digit phone number
     if (!phoneRegex.test(phoneNo)) {
       return res.status(400).json({ message: "Invalid phone number format." });
@@ -100,22 +97,16 @@ export const patientsRegistration = async (req, res) => {
       age,
       height,
       weight,
-      bloodgroup,
-      AnyMedicalHistory,
-      AnyPreviousReport,
+      // bloodgroup,
     });
 
-    // Save to database
     const savedPatient = await newPatientsRegistration.save();
 
-    // Respond with success message
-    res.status(201).json({
-      message: "Patient registered successfully",
+    res.status(201).json({success: true,message: "Patient registered successfully",
       data: savedPatient,
     });
-
   } catch (error) {
     console.error("Error in patient registration:", error);
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res.status(500).json({success: false,message: "Internal Server Error", error: error.message });
   }
 };

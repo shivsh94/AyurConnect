@@ -21,12 +21,12 @@ const userModel = new mongoose.Schema({
     },
     confirmPassword: {
         type: String,
-        // required: true,
         hide: true
     },
-    patientDetails:{
+    // Connect with Patient Model
+    patientDetails: {
         type: Schema.Types.ObjectId,
-        ref: 'patientRegistration'
+        ref: 'Patients'   // **Reference to Patient Model**
     },
     doctorDetails:{
         type: Schema.Types.ObjectId,

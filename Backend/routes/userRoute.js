@@ -10,7 +10,7 @@ const router = express.Router();
 router.post("/signup", Signup);
 router.post("/signin", SignIn);
 router.post("/signout", SignOut);
-router.post("/sendEmailVerificationOTP", sendEmailVerificationOTP);
+router.post("/send-otp", sendEmailVerificationOTP);
 router.post("/verifyEmail", verifyEmail);
 router.post("/doctorRegistration",isAuthenticated, doctorRegistration);
 router.post("/patientsRegistration",isAuthenticated, patientsRegistration);

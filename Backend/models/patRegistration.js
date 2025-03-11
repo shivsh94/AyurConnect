@@ -18,33 +18,15 @@ const patRegistration = new mongoose.Schema({
         required:true
     },
     height :{
-        type:Number,
-        // required:true
+        type:Number
     },
     weight :{
-        type:Number,
-        // required:true
+        type:Number
     },
-    bloodgroup :{
-        type:String,
-        
-    },
-    gender :{
-        type:String,
-        // required:true
-    },
-    disease :{
-        type:String,
-        // required:true
-    },
-    AnyMedicalHistory: {
-        type: String,
-        // required: true
-    },
-    AnyPreviousReport: {
-        type: String,
-        // required: true
-        }
-    });
-    
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'   // ✅ Connect to User Model
+    }
+});
+
 export default mongoose.model("Patients", patRegistration);

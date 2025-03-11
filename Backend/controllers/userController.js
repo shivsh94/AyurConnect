@@ -60,11 +60,11 @@ export const SignIn = async (req, res) => {
     }
 
     // Generate JWT
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET_KEY, {
       expiresIn: "7d",
     });
 
-    return res.status(200).cookie("token", token).json({ _id: user._id, message: "User signed in successfully", success: true });
+    return res.status(200).cookie("token", token).json({ email: user.email, message: "User signed in successfully", success: true });
 
   } catch (error) {
     console.log(error);
