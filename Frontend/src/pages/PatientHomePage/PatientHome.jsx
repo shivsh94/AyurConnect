@@ -4,7 +4,6 @@ import DoctorCards from "./DoctorCards";
 import ImageCarousel from "./ImageCarousel";
 
 function PatientHome() {
-  // State for handling sort dropdown visibility
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   // Toggle sort dropdown

@@ -14,8 +14,14 @@ import DocHome from './pages/DoctorHomePage/DocHome';
 import DoctorProfile from './Components/Profile/doctorProfile';
 import OtpPage from './Components/Authentications/Otp';
 import Homepage from './pages/Home/Homepage';
+import axios from 'axios';
+
+axios.defaults.baseURL = "http://localhost:5000/api/v1/user";
+axios.defaults.withCredentials = true;
+
 
 function App() {
+
   return (
     <BrowserRouter>
       <Routes>

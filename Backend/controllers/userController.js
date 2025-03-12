@@ -81,7 +81,8 @@ export const SignIn = async (req, res) => {
 export const SignOut = async (req, res) => {
   try {
     res.clearCookie("token");
-    return res.json({ message: "User signed out successfully" });
+    res.clearCookie("Patients");
+    return res.json({success:true, message: "User signed out successfully" });
   } catch (error) {
     console.log(error);
   }
