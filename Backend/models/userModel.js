@@ -18,11 +18,6 @@ const userModel = new mongoose.Schema({
         type: String,
         required: true
     },
-    role: {  
-        type: String,
-        enum: ["patient", "doctor"],
-        required: true
-    },
     patientDetails: {
         type: Schema.Types.ObjectId,
         ref: "Patients"    

@@ -8,9 +8,9 @@ import transport from "../config/emailConfig.js";
 
 export const Signup = async (req, res) => {
   try {
-    const { email, password, confirmPassword, role } = req.body;
+    const { email, password, confirmPassword } = req.body;
 
-    if (!email || !password || !confirmPassword || !role) {
+    if (!email || !password || !confirmPassword ) {
       return res.status(400).json({ message: "All fields are required" });
     }
     if (password !== confirmPassword) {
@@ -24,7 +24,6 @@ export const Signup = async (req, res) => {
 
     const newUser = await User.create({
       email,
-      role,
       password: hashedPassword,
     });
     return res.json({
