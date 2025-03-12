@@ -93,7 +93,7 @@ export const patientsRegistration = async (req, res) => {
       age,
       height,
       weight,
-      userId: req.user._id,
+      userId: req.user.id,
     });
 
     await newPatient.save();

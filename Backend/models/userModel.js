@@ -23,10 +23,10 @@ const userModel = new mongoose.Schema({
         type: String,
         hide: true
     },
-    // Connect with Patient Model
+     
     patientDetails: {
         type: Schema.Types.ObjectId,
-        ref: 'Patients'   // **Reference to Patient Model**
+        ref: 'Patients'    
     },
     doctorDetails:{
         type: Schema.Types.ObjectId,

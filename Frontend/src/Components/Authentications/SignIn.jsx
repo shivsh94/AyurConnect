@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { useDispatch, useSelector  } from "react-redux";
+import { login } from "../../features/login/loginSlice";
 
 function SignIn() {
   const [user, setUser] = useState({
@@ -10,7 +12,10 @@ function SignIn() {
     password: "",
   });
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const currUser = useSelector((state) => state.login.currentUser);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +36,8 @@ function SignIn() {
 
       if (res.data.success) {
         navigate("/patient/dashboard");
+        localStorage.setItem("token", res.data.token);
+        dispatch(login(res.data.user));  
         toast.success(res.data.message);
       }
     } catch (error) {

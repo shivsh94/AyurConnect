@@ -5,12 +5,15 @@ import "./index.css";
 // import { RouterProvider } from 'react-router-dom'
 import { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { store } from './redux/store.js'
+import { Provider } from 'react-redux'
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+    <Provider store={store}>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
       <App />
     </GoogleOAuthProvider>
     <Toaster />
-  </React.StrictMode>
+    </Provider>
+  
 );
