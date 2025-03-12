@@ -10,27 +10,26 @@ const userModel = new mongoose.Schema({
         type: String,
         expires: 300 // 5 minutes
     },
-    isVerified:{
+    isVerified: {
         type: Boolean,
         default: false
     },
     password: {
         type: String,
-        required: true,
-        hide: true
+        required: true
     },
-    confirmPassword: {
+    role: {  
         type: String,
-        hide: true
+        enum: ["patient", "doctor"],
+        required: true
     },
-     
     patientDetails: {
         type: Schema.Types.ObjectId,
-        ref: 'Patients'    
+        ref: "Patients"    
     },
-    doctorDetails:{
+    doctorDetails: {
         type: Schema.Types.ObjectId,
-        ref: 'doctorRegistration'
+        ref: "doctorRegistration"
     }
 });
 
