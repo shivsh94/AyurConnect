@@ -1,9 +1,14 @@
-import Patients from "../models/patRegistration.js";
 import Doctor from "../models/docRegistration.js";
+import Patients from "../models/patRegistration.js";
 import jwt from "jsonwebtoken";
 
 export const doctorRegistration = async (req, res) => {
   try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: User not logged in" });
+    }
+
     const {
       name,
       phone,
@@ -13,27 +18,20 @@ export const doctorRegistration = async (req, res) => {
       speciality,
       licence,
       clinic,
-      Experience,
-      uploadYourCertificate,
+      experience, 
     } = req.body;
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: "Unauthorized: User not login" });
+
+    if (!name || !phone || !address || !gender || !age || !speciality || !licence || !clinic || !experience) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    if (
-      !name ||
-      !phone ||
-      !address ||
-      !gender ||
-      !age ||
-      !speciality ||
-      !licence ||
-      !clinic ||
-      !Experience ||
-      !uploadYourCertificate
-    ) {
-      return res.status(400).json({ message: "All fields are required" });
+    const existingDoctor = await Doctor.findOne({ userId: user._id });
+
+    if (existingDoctor) {
+      return res.status(400).json({
+        message: "You have already registered a doctor. You cannot register again.",
+        data: existingDoctor,
+      });
     }
 
     const newDocRegistration = new Doctor({
@@ -45,22 +43,20 @@ export const doctorRegistration = async (req, res) => {
       speciality,
       licence,
       clinic,
-      Experience,
-      uploadYourCertificate,
+      experience, 
+      userId: user.id,
     });
+
     const currentDoctor = await newDocRegistration.save();
     console.log(currentDoctor);
 
-    res
-      .status(200)
-      .json({ message: "Doctor Registered Successfully", data: currentDoctor });
+    res.status(200).json({success:true, message: "Doctor Registered Successfully", data: currentDoctor });
   } catch (error) {
     console.error("Error in doctor registration:", error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    res.status(500).json({success:false, message: "Internal Server Error", error: error.message });
   }
 };
+
 
 export const patientsRegistration = async (req, res) => {
   try {
@@ -128,9 +124,13 @@ export const getPatients = async (req, res) => {
         message: "No patients found for this user",
       });
     }
-    const patient_details = jwt.sign({ data: patients }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d",
-    });
+    const patient_details = jwt.sign(
+      { data: patients },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "7d",
+      }
+    );
     res.cookie("Patients", patient_details, {
       httpOnly: true,
       maxAge: 3600000,
@@ -141,7 +141,7 @@ export const getPatients = async (req, res) => {
       success: true,
       message: "Patients fetched successfully",
       patient_details,
-      data: patients, 
+      data: patients,
     });
   } catch (error) {
     console.error("Error in fetching patients:", error);
@@ -152,3 +152,5 @@ export const getPatients = async (req, res) => {
     });
   }
 };
+
+

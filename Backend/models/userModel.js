@@ -24,7 +24,7 @@ const userModel = new mongoose.Schema({
     },
     doctorDetails: {
         type: Schema.Types.ObjectId,
-        ref: "doctorRegistration"
+        ref: "Doctor"
     }
 });
 

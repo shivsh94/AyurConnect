@@ -6,7 +6,7 @@ const doctorSchema = new mongoose.Schema({
     required: true,
   },
   phone: {
-    type: Number,
+    type: String, // Changed from Number to String to prevent truncation
     required: true,
   },
   address: {
@@ -26,19 +26,20 @@ const doctorSchema = new mongoose.Schema({
     required: true,
   },
   licence: {
-    type: Number,
+    type: String, // Changed from Number to String
     required: true,
   },
   clinic: {
     type: String,
     required: true,
   },
-  Experience: {
+  experience: { // Changed from Experience to experience (camelCase)
     type: Number,
     required: true,
   },
-  uploadYourCertificate: {
-    type: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 });
