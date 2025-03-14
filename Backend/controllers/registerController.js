@@ -153,4 +153,46 @@ export const getPatients = async (req, res) => {
   }
 };
 
+export const getDoctors = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: User not logged in" });
+    }
+    const doctors = await Doctor.findOne({ userId: req.user.id });
+    if (!doctors) {
+      return res.status(404).json({
+        success: false,
+        message: "No doctors found for this user",
+      });
+    }
+    const doctor_details = jwt.sign(
+      { data: doctors },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "7d",
+      }
+    );
+    res.cookie("Doctors", doctor_details, {
+      httpOnly: true,
+      maxAge: 3600000,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+    res.status(200).json({
+      success: true,
+      message: "Doctors fetched successfully",
+      doctor_details,
+      data: doctors,
+    });
+  } catch (error) {
+    console.error("Error in fetching doctors:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+}
 

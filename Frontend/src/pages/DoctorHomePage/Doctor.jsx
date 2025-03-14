@@ -53,8 +53,6 @@ function Doctor() {
 
   return (
     <div className="bg-black">
-      {/* Navbar */}
-
 
       {/* Main Content */}
       <div className="w-full h-full flex mt-28 bg-black">
