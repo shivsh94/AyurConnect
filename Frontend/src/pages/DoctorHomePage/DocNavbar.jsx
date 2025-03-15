@@ -1,8 +1,33 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import logo from '../../assets/logo.png';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { login } from '../../features/login/loginSlice';
 
 function DocNavbar() {
+
+  const dispatch = useDispatch();
+  const doctor = useSelector((state) => state.login.currentUser);
+
+  useEffect(() => {
+
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get("/getdoctor");
+        if (response.data.success) {
+          console.log(response.data);
+          dispatch(login(response.data.data));
+        }
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, [dispatch]);
+
   return (
     <div>
       <div className="fixed top-0 left-0 right-0 z-10 flex items-center p-3 justify-between bg-black text-white">
@@ -19,8 +44,8 @@ function DocNavbar() {
               {item}
             </NavLink>
           ))}
-          <div className="text-1xl">
-            <NavLink to="/user">Doctor's Name</NavLink>
+          <div className="text-1xl border-l-2 pl-10">
+             <p className='border border-yellow-200 px-2 py-2 rounded-2xl font-bold'>Dr. {doctor.name}</p>
           </div>
         </div>
       </div>

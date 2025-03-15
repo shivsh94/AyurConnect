@@ -156,9 +156,7 @@ export const getPatients = async (req, res) => {
 export const getDoctors = async (req, res) => {
   try {
     if (!req.user) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: User not logged in" });
+      return res.status(401).json({ message: "Unauthorized: User not logged in" });
     }
     const doctors = await Doctor.findOne({ userId: req.user.id });
     if (!doctors) {
