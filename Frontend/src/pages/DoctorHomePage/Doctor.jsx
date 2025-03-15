@@ -54,9 +54,8 @@ function Doctor() {
   return (
     <div className="bg-black">
 
-      {/* Main Content */}
       <div className="w-full h-full flex mt-28 bg-black">
-        {/* Doctor details */}
+
         <div className="bg-black w-1/4 h-screen">
           <div className="flex flex-col items-center justify-center pt-10 gap-5 ">
             <img width={150} height={150} src={img} alt="" />
@@ -68,7 +67,7 @@ function Doctor() {
             <p className="text-gray-400">{doctorDetails.email}</p>
             <StarRating rating={Math.round(doctorDetails.rating)} />
             <button
-              onClick={togglePopup} // Open the blog writing popup
+              onClick={togglePopup} 
               className="w-1/2 cursor-pointer border border-yellow-200 rounded-full h-12 px-5 font-bold hover:shadow-xl hover:scale-105 duration-300 transition-all"
             >
               Write Blog
