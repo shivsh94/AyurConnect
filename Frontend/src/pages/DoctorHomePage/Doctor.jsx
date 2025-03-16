@@ -75,7 +75,6 @@ function Doctor() {
           </div>
         </div>
 
-        {/* Buttons and Sections */}
         <div className="mr-10 absolute ml-96">
           <div className="grid grid-cols-3 gap-7 pt-5 pr-40">
             <button
