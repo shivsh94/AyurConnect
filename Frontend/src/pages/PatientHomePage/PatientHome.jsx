@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Disease from "./Disease";
 import DoctorCards from "./DoctorCards";
 import ImageCarousel from "./ImageCarousel";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {loadDoctor, clearDoctor} from '../../features/doctor/doctorSlice';
 
 function PatientHome() {
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const dispatch = useDispatch();
+  const doctor = useSelector((state) => state.doctor.currentDoctor);
+
 
   // Toggle sort dropdown
   const toggleSortDropdown = () => {
@@ -12,6 +18,22 @@ function PatientHome() {
   };
 
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const fetchAllDoctors = async () => {
+      try {
+        const response = await axios.get("/getalldoctor");
+        // console.log(response.data);
+        if (response.data.success) {
+          // console.log(response.data);
+          dispatch(loadDoctor(response.data.data));
+        }
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      }
+    };
+    fetchAllDoctors();
+  }, [dispatch]);
 
   return (
     <div>

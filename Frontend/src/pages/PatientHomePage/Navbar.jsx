@@ -4,10 +4,12 @@ import logo from '../../assets/logo.png';
 import axios from "axios";
 import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from '../../features/login/loginSlice';
+import {loadDoctor, clearDoctor} from '../../features/doctor/doctorSlice';
 
 function Navbar() {
   const dispatch = useDispatch();
   const patient = useSelector((state) => state.login.currentUser);
+  const doctor = useSelector((state) => state.doctor.currentDoctor);
 
   useEffect(() => {
 
@@ -25,6 +27,8 @@ function Navbar() {
 
     fetchPatients();
   }, [dispatch]);
+
+  
 
   const handleLogout = async () => {
     try {
