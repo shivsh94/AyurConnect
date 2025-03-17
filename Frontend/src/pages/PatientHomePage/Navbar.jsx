@@ -35,6 +35,7 @@ function Navbar() {
       const response = await axios.post("/signout");
       if (response.data.success) {
         dispatch(logout());
+        dispatch(clearDoctor());
         window.location.reload();
       }
     } catch (error) {
