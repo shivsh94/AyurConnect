@@ -28,8 +28,6 @@ function Navbar() {
     fetchPatients();
   }, [dispatch]);
 
-  
-
   const handleLogout = async () => {
     try {
       const response = await axios.post("/signout");

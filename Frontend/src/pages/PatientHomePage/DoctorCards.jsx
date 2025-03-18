@@ -1,13 +1,16 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-function DoctorCard({ name, degree, experience, specialty, image,id }) {
-
+function DoctorCard({ name, degree, experience, speciality, image, id }) {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const doctor = useSelector((state) => state.doctor.currentDoctor);
+  // console.log("DoctorCard", doctor);
 
   const handleViewProfileClick = () => {
-    navigate(`/Profile/${id}`); 
+    navigate(`/Profile/${id}`);
   };
 
 
@@ -25,11 +28,11 @@ function DoctorCard({ name, degree, experience, specialty, image,id }) {
 
       {/* Doctor Details Section */}
       <div className="p-4 flex-grow mt-5">
-        <h2 className="text-xl font-bold mb-2">{name}</h2>
+        <h2 className="text-xl font-bold mb-2">{doctor[0].name}</h2>
         <p className="text-gray-500 font-medium">Degree: {degree}</p>
-        <p className="text-gray-500 font-medium">Specialty: {specialty }</p>
+        <p className="text-gray-500 font-medium">Specialty: {doctor[0].speciality}</p>
         <p className="text-gray-500 font-medium">
-          Experience: {experience} years
+          Experience: {doctor[0].experience} years
         </p>
 
         {/* Button Container */}
@@ -37,7 +40,7 @@ function DoctorCard({ name, degree, experience, specialty, image,id }) {
           <button className="bg-green-600 hover:bg-green-700 hover:scale-105 text-white font-bold py-2 px-4 rounded-md transition duration-300">
             Book Appointment
           </button>
-          <button onClick={handleViewProfileClick}  className="bg-gray-200 hover:bg-gray-300 hover:scale-105 text-gray-800 font-bold py-2 px-4 rounded-md transition duration-300">
+          <button onClick={handleViewProfileClick} className="bg-gray-200 hover:bg-gray-300 hover:scale-105 text-gray-800 font-bold py-2 px-4 rounded-md transition duration-300">
             View Profile
           </button>
         </div>
@@ -50,7 +53,7 @@ function DoctorCard({ name, degree, experience, specialty, image,id }) {
 function DoctorsList() {
   const doctors = [
     {
-      id:"1",
+      id: "1",
       name: "Dr. John Doe",
       degree: "MBBS, MD",
       experience: 15,
@@ -64,7 +67,7 @@ function DoctorsList() {
       image: "https://randomuser.me/api/portraits/men/1.jpg",
     },
     {
-      id:"2",
+      id: "2",
       name: "Dr. Jane Smith",
       degree: "MBBS, MS",
       experience: 10,
@@ -78,7 +81,7 @@ function DoctorsList() {
       image: "https://randomuser.me/api/portraits/women/2.jpg",
     },
     {
-      id:"3",
+      id: "3",
       name: "Dr. Alex Johnson",
       degree: "MBBS, MCh",
       experience: 20,
