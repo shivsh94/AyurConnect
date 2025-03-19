@@ -1,13 +1,15 @@
 import Doctor from "../models/docRegistration.js";
 import Patients from "../models/patRegistration.js";
 import jwt from "jsonwebtoken";
-
 export const doctorRegistration = async (req, res) => {
   try {
     const user = req.user;
     if (!user) {
       return res.status(401).json({ message: "Unauthorized: User not logged in" });
     }
+
+    user.isDoctor=true;
+    await user.save();
 
     const {
       name,
@@ -45,6 +47,7 @@ export const doctorRegistration = async (req, res) => {
       clinic,
       experience, 
       userId: user.id,
+
     });
 
     const currentDoctor = await newDocRegistration.save();
@@ -109,6 +112,7 @@ export const patientsRegistration = async (req, res) => {
     });
   }
 };
+
 
 export const getPatients = async (req, res) => {
   try {

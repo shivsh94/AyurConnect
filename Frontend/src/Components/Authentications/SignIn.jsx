@@ -35,9 +35,13 @@ function SignIn() {
       );
 
       if (res.data.success) {
-        navigate("/patient/dashboard");
         localStorage.setItem("token", res.data.token);
-        dispatch(login(res.data.user));  
+        dispatch(login(res.data.user)); 
+        if(res.data.user.isDoctor){
+          navigate("/Doctor/Docdashboard");
+        }else{
+          navigate("/Patient/dashboard");
+        } 
         toast.success(res.data.message);
       }
     } catch (error) {

@@ -25,7 +25,7 @@ function Doctor() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/doctorRegistration", formData); // Ensure correct API route
+      const response = await axios.post("/doctorRegistration", formData);  
       console.log("Form submitted:", response.data);
       alert("Doctor registered successfully!");
     } catch (error) {

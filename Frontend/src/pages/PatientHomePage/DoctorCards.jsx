@@ -2,12 +2,11 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-function DoctorCard({ name, degree, experience, speciality, image, id }) {
+function DoctorCard({ key, name, degree, experience, specialty, image, id }) {
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const doctor = useSelector((state) => state.doctor.currentDoctor);
-  // console.log("DoctorCard", doctor);
+  console.log(name, degree, experience, specialty, image, id);
+
 
   const handleViewProfileClick = () => {
     navigate(`/Profile/${id}`);
@@ -28,11 +27,11 @@ function DoctorCard({ name, degree, experience, speciality, image, id }) {
 
       {/* Doctor Details Section */}
       <div className="p-4 flex-grow mt-5">
-        <h2 className="text-xl font-bold mb-2">{doctor[0].name}</h2>
+        <h2 className="text-xl font-bold mb-2">{name}</h2>
         <p className="text-gray-500 font-medium">Degree: {degree}</p>
-        <p className="text-gray-500 font-medium">Specialty: {doctor[0].speciality}</p>
+        <p className="text-gray-500 font-medium">Specialty: {specialty}</p>
         <p className="text-gray-500 font-medium">
-          Experience: {doctor[0].experience} years
+          Experience: {experience} years
         </p>
 
         {/* Button Container */}
@@ -44,68 +43,24 @@ function DoctorCard({ name, degree, experience, speciality, image, id }) {
             View Profile
           </button>
         </div>
-
       </div>
     </div>
   );
 }
 
 function DoctorsList() {
-  const doctors = [
-    {
-      id: "1",
-      name: "Dr. John Doe",
-      degree: "MBBS, MD",
-      experience: 15,
-      specialty: [
-        "Pediatrics ",
-        "Cardiology ",
-        "Neurology ",
-        "Orthopedics ",
-        "Dermatology ",
-      ],
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: "2",
-      name: "Dr. Jane Smith",
-      degree: "MBBS, MS",
-      experience: 10,
-      specialty: [
-        "Pediatrics ",
-        "Cardiology ",
-        "Neurology ",
-        "Orthopedics ",
-        "Dermatology ",
-      ],
-      image: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      id: "3",
-      name: "Dr. Alex Johnson",
-      degree: "MBBS, MCh",
-      experience: 20,
-      specialty: "Orthopedics",
-      image: "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-    {
-      name: "Dr. Emily White",
-      degree: "MBBS, MD",
-      experience: 12,
-      specialty: "Pediatrics",
-      image: "https://randomuser.me/api/portraits/women/4.jpg",
-    },
-  ];
+  const doctors = useSelector((state) => state.doctor.currentDoctor) || [];
 
   return (
+
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-5 ">
-      {doctors.map((doctor, index) => (
+      {doctors.length > 0 && doctors.map((doctor, index) => (
         <DoctorCard
           key={index}
           name={doctor.name}
-          degree={doctor.degree}
+          degree={doctor?.degree}
           experience={doctor.experience}
-          specialty={doctor.specialty}
+          specialty={doctor.speciality}
           image={doctor.image}
           id={doctor.id}
         />

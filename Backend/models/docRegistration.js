@@ -42,6 +42,7 @@ const doctorSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+   
 });
 
 const Doctor = mongoose.model("Doctor", doctorSchema);

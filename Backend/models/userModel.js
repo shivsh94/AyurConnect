@@ -25,6 +25,10 @@ const userModel = new mongoose.Schema({
     doctorDetails: {
         type: Schema.Types.ObjectId,
         ref: "Doctor"
+    },
+    isDoctor: {
+        type: Boolean,
+        default: false
     }
 });
 

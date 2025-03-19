@@ -23,7 +23,7 @@ function PatientHome() {
     const fetchAllDoctors = async () => {
       try {
         const response = await axios.get("/getalldoctor");
-        // console.log(response.data);
+        console.log(response.data);
         if (response.data.success) {
           // console.log(response.data);
           dispatch(loadDoctor(response.data.data));
