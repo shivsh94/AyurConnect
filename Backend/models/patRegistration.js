@@ -28,6 +28,7 @@ const patRegistration = new mongoose.Schema({
         ref: 'User'  
          
     }
+    
 });
 
 export default mongoose.model("Patients", patRegistration);

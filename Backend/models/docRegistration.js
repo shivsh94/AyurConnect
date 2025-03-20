@@ -42,6 +42,12 @@ const doctorSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  requestedAppointments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+    },
+  ],
    
 });
 
