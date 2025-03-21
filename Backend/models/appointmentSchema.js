@@ -14,7 +14,7 @@ const appointmentSchema = new mongoose.Schema({
   appointmentTime: { type: Date, required: true },
   status: {
     type: String,
-    enum: ["pending", "confirmed", "cancelled", "completed"],
+    enum: ["pending"],
     default: "pending",
   },
   createdAt: { type: Date, default: Date.now },
