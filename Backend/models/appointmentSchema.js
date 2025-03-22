@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const appointmentSchema = new mongoose.Schema({
   doctorId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -8,13 +9,20 @@ const appointmentSchema = new mongoose.Schema({
   },
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Patient",
+    ref: "User",
     required: true,
   },
-  appointmentTime: { type: Date, required: true },
+  appointmentTime: {
+    type: Date,
+    required: true,
+  },
+  appointmentDate: {
+    type: Date,
+    required: true,
+  },
   status: {
     type: String,
-    enum: ["pending"],
+    enum: ["pending", "confirmed", "cancelled", "completed"],
     default: "pending",
   },
   createdAt: { type: Date, default: Date.now },

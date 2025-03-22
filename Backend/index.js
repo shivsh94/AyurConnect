@@ -23,7 +23,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Routes
 app.use("/api/v1/user", userRoute);
 
 app.get("/", (req, res) => {
