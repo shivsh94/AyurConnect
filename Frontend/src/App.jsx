@@ -15,6 +15,7 @@ import DoctorProfile from './Components/Profile/doctorProfile';
 import OtpPage from './Components/Authentications/Otp';
 import Homepage from './pages/Home/Homepage';
 import axios from 'axios';
+import Appointment from './pages/Appointment/appointment';
 
 axios.defaults.baseURL = "http://localhost:5000/api/v1/user";
 axios.defaults.withCredentials = true;
@@ -40,6 +41,7 @@ function App() {
         <Route path="/Patient/*" element={<Home />}>
           <Route path="dashboard" element={<PatientHome/>} />
           <Route path="about-us" element={<AboutUs />} />
+          <Route path="appointments" element={<Appointment/>} />
 
           {/* <Route path="video" element={<Video/>} /> */}
         </Route>
