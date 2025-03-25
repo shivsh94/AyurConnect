@@ -41,16 +41,16 @@ function App() {
         <Route path="/Patient/*" element={<Home />}>
           <Route path="dashboard" element={<PatientHome/>} />
           <Route path="about-us" element={<AboutUs />} />
-          <Route path="appointments" element={<Appointment/>} />
+          <Route path=":doctorId/appointments" element={<Appointment/>} />
 
-          {/* <Route path="video" element={<Video/>} /> */}
+           
         </Route>
 
         <Route path="/Doctor/*" element={<DocHome />} >
           <Route path="Docdashboard" element={<Doctor />} />
         </Route>
         
-        {/* Fallback route for 404 */}
+         
         <Route path="*" element={<div>404 Error - Page Not Found</div>} />
       </Routes>
     </BrowserRouter>

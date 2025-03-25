@@ -12,6 +12,10 @@ function DoctorCard({ key, name, degree, experience, specialty, image, id }) {
     navigate(`/Profile/${id}`);
   };
 
+  const handleAppointment = () => {
+    navigate(`/Patient/${id}/appointments`);
+  };
+
 
 
   return (
@@ -34,9 +38,9 @@ function DoctorCard({ key, name, degree, experience, specialty, image, id }) {
           Experience: {experience} years
         </p>
 
-        {/* Button Container */}
+         
         <div className="mt-4 flex  justify-evenly space-x-2">
-          <button className="bg-green-600 hover:bg-green-700 hover:scale-105 text-white font-bold py-2 px-4 rounded-md transition duration-300">
+          <button onClick={handleAppointment} className="bg-green-600 hover:bg-green-700 hover:scale-105 text-white font-bold py-2 px-4 rounded-md transition duration-300">
             Book Appointment
           </button>
           <button onClick={handleViewProfileClick} className="bg-gray-200 hover:bg-gray-300 hover:scale-105 text-gray-800 font-bold py-2 px-4 rounded-md transition duration-300">
@@ -62,7 +66,7 @@ function DoctorsList() {
           experience={doctor.experience}
           specialty={doctor.speciality}
           image={doctor.image}
-          id={doctor.id}
+          id={doctor._id}
         />
       ))}
     </div>

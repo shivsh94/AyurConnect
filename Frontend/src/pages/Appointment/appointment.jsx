@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const AppointmentPage = () => {
+  const { doctorId } = useParams();
   const [formData, setFormData] = useState({
-    doctorId: "",
+    doctorId: doctorId,
     appointmentDate: "",
     appointmentTime: "",
   });
@@ -18,7 +20,7 @@ const AppointmentPage = () => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
-    
+
     try {
       const response = await axios.post("/createAppointment", formData, {
         headers: { "Content-Type": "application/json" },
@@ -35,11 +37,11 @@ const AppointmentPage = () => {
   const generateTimeSlots = () => {
     const slots = [];
     let startTime = new Date();
-    startTime.setHours(9, 0, 0, 0);  
+    startTime.setHours(9, 0, 0, 0);
     let endTime = new Date();
-    endTime.setHours(17, 0, 0, 0);  
+    endTime.setHours(17, 0, 0, 0);
     while (startTime < endTime) {
-      const timeString = startTime.toLocaleTimeString([], {
+      const timeString = startTime.toLocaleTimeString([], {   
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -56,24 +58,13 @@ const AppointmentPage = () => {
         {message && <p className="text-center text-sm mb-4 text-red-500">{message}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-white">Doctor ID</label>
-            <input 
-              type="text" 
-              name="doctorId" 
-              value={formData.doctorId} 
-              onChange={handleChange} 
-              required 
-              className="mt-1 p-2 w-full border rounded-lg focus:ring focus:ring-blue-300 text-black"
-            />
-          </div>
-          <div>
             <label className="block text-sm font-medium text-white">Appointment Date</label>
-            <input 
-              type="date" 
-              name="appointmentDate" 
-              value={formData.appointmentDate} 
-              onChange={handleChange} 
-              required 
+            <input
+              type="date"
+              name="appointmentDate"
+              value={formData.appointmentDate}
+              onChange={handleChange}
+              required
               className="mt-1 p-2 w-full border rounded-lg focus:ring focus:ring-blue-300 text-black"
             />
           </div>
@@ -85,17 +76,16 @@ const AppointmentPage = () => {
                   key={index}
                   type="button"
                   onClick={() => setFormData({ ...formData, appointmentTime: slot })}
-                  className={`p-2 text-sm rounded-lg border focus:ring focus:ring-blue-300 transition ${
-                    formData.appointmentTime === slot ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
-                  }`}
+                  className={`p-2 text-sm rounded-lg border focus:ring focus:ring-blue-300 transition ${formData.appointmentTime === slot ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+                    }`}
                 >
                   {slot}
                 </button>
               ))}
             </div>
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
             disabled={loading}
           >
