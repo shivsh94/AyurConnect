@@ -5,26 +5,32 @@ import RequestedAppointments from "./Requested";
 import PatientList from "./PatientList";
 import PatientHistory from "./patientHistory";
 import StarRating from "./StarRating";
-import BlogPopup from "./BlogPopup";  
+import BlogPopup from "./BlogPopup";
+import { useSelector } from "react-redux";
 
 function Doctor() {
   const [showRequestedAppointments, setShowRequestedAppointments] = useState(false);
   const [showPatientList, setShowPatientList] = useState(true);
   const [showPatientHistory, setShowPatientHistory] = useState(false);
   const [blogs, setBlogs] = useState([]);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);  
-  // Doctor's details
-  const doctorDetails = {
-    name: "Dr. John",
-    specialization: "Cardiologist",
-    contact: "+9123456789",
-    email: "dr.johndoe@gmail.com",
-    experience: "15 years of experience",
-    location: "Savitri Hospital, Ghaziabad",
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+
+  const doctor = useSelector((state) => state.login.currentUser);
+  
+  console.log(doctor);
+
+  const doctors = {
+    name: doctor.name,
+    specialization:  doctor.speciality,
+    contact:  doctor.phone,
+    // email: "dr.johndoe@gmail.com",
+    experience:  doctor.experience,
+    location:  doctor.clinic,
     rating: 3.5,
   };
 
-  // Button handlers
+
   const handleRequestedAppointmentsClick = () => {
     setShowRequestedAppointments(true);
     setShowPatientList(false);
@@ -48,7 +54,7 @@ function Doctor() {
   };
 
   const togglePopup = () => {
-    setIsPopupOpen(!isPopupOpen);  
+    setIsPopupOpen(!isPopupOpen);
   };
 
   return (
@@ -59,15 +65,15 @@ function Doctor() {
         <div className="bg-black w-1/4 h-screen">
           <div className="flex flex-col items-center justify-center pt-10 gap-5 ">
             <img width={150} height={150} src={img} alt="" />
-            <h1>{doctorDetails.name}</h1>
-            <p className="text-gray-400">{doctorDetails.specialization}</p>
-            <p className="text-gray-400">{doctorDetails.experience}</p>
-            <p className="text-gray-400">{doctorDetails.location}</p>
-            <p className="text-gray-400">{doctorDetails.contact}</p>
-            <p className="text-gray-400">{doctorDetails.email}</p>
-            <StarRating rating={Math.round(doctorDetails.rating)} />
+            <h1>{doctor.name}</h1>
+            <p className="text-gray-400">{doctor.speciality}</p>
+            <p className="text-gray-400">{doctor.experience}</p>
+            <p className="text-gray-400">{doctor.clinic}</p>
+            <p className="text-gray-400">{doctor.phone}</p>
+            {/* <p className="text-gray-400">{doctor.email}</p> */}
+            <StarRating rating={Math.round(doctors.rating)} />
             <button
-              onClick={togglePopup} 
+              onClick={togglePopup}
               className="w-1/2 cursor-pointer border border-yellow-200 rounded-full h-12 px-5 font-bold hover:shadow-xl hover:scale-105 duration-300 transition-all"
             >
               Write Blog
@@ -78,12 +84,11 @@ function Doctor() {
         <div className="mr-10 absolute ml-96">
           <div className="grid grid-cols-3 gap-7 pt-5 pr-40">
             <button
-              onClick={handleRequestedAppointmentsClick}
-              className={`cursor-pointer flex items-center justify-center overflow-hidden rounded-full h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] w-full transition-all ${
-                showRequestedAppointments
-                  ? " border border-yellow-200 hover:shadow-xl transition-shadow duration-300 text-white"
-                  : "text-white hover:bg-gray-500"
-              } hover:scale-105 `}
+              onClick={()=>handleRequestedAppointmentsClick()}
+              className={`cursor-pointer flex items-center justify-center overflow-hidden rounded-full h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] w-full transition-all ${showRequestedAppointments
+                ? " border border-yellow-200 hover:shadow-xl transition-shadow duration-300 text-white"
+                : "text-white hover:bg-gray-500"
+                } hover:scale-105 `}
               style={{ backgroundColor: "transparent", boxShadow: "none" }}
             >
               <span>Requested Appointments</span>
@@ -91,23 +96,21 @@ function Doctor() {
 
             <button
               onClick={handlePatientListClick}
-              className={`cursor-pointer flex items-center justify-center overflow-hidden rounded-full h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] w-full transition-all ${
-                showPatientList
-                  ? "bg-gray-400 border border-yellow-200 hover:shadow-xl transition-shadow duration-300 text-white"
-                  : "bg-gray-400 text-white hover:bg-gray-500"
-              } hover:scale-105 `}
+              className={`cursor-pointer flex items-center justify-center overflow-hidden rounded-full h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] w-full transition-all ${showPatientList
+                ? "bg-gray-400 border border-yellow-200 hover:shadow-xl transition-shadow duration-300 text-white"
+                : "bg-gray-400 text-white hover:bg-gray-500"
+                } hover:scale-105 `}
               style={{ backgroundColor: "transparent", boxShadow: "none" }}
             >
               <span>Patient List</span>
             </button>
 
             <button
-            onClick={handlePatientHistoryClick}
-              className={`cursor-pointer flex items-center justify-center overflow-hidden rounded-full h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] w-full transition-all ${
-                showPatientHistory
-                  ? "bg-gray-400 border border-yellow-200 hover:shadow-xl transition-shadow duration-300 text-white"
-                  : "bg-gray-400 text-white hover:bg-gray-500"
-              } hover:scale-105 `}
+              onClick={handlePatientHistoryClick}
+              className={`cursor-pointer flex items-center justify-center overflow-hidden rounded-full h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] w-full transition-all ${showPatientHistory
+                ? "bg-gray-400 border border-yellow-200 hover:shadow-xl transition-shadow duration-300 text-white"
+                : "bg-gray-400 text-white hover:bg-gray-500"
+                } hover:scale-105 `}
               style={{ backgroundColor: "transparent", boxShadow: "none" }}
             >
               <span>Patient History</span>

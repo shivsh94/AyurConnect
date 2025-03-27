@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 function DoctorCard({ key, name, degree, experience, specialty, image, id }) {
@@ -20,7 +20,7 @@ function DoctorCard({ key, name, degree, experience, specialty, image, id }) {
 
   return (
     <div className="bg-black shadow-md rounded-lg overflow-hidden border border-yellow-200 hover:border-yellow-300 hover:scale-105 flex">
-      {/* Profile Image Section */}
+      
       <div className="flex-none w-24 h-24 bg-black mt-5 mr-2 ml-3 relative">
         <img
           src={image}
@@ -29,7 +29,7 @@ function DoctorCard({ key, name, degree, experience, specialty, image, id }) {
         />
       </div>
 
-      {/* Doctor Details Section */}
+      
       <div className="p-4 flex-grow mt-5">
         <h2 className="text-xl font-bold mb-2">{name}</h2>
         <p className="text-gray-500 font-medium">Degree: {degree}</p>

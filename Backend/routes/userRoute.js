@@ -4,7 +4,7 @@ import { SignIn } from "../controllers/userController.js";
 import {doctorRegistration, getAllDoctors, getDoctors, getPatients} from "../controllers/registerController.js";
 import {patientsRegistration} from "../controllers/registerController.js";
 import isAuthenticated from "../milldleware/isAuthenticated.js";
-import { createAppointment } from "../controllers/appointmentController.js";
+import { createAppointment, getAppointments } from "../controllers/appointmentController.js";
 
 const router = express.Router();
 
@@ -19,6 +19,7 @@ router.get("/getpatients",isAuthenticated , getPatients);
 router.get("/getdoctor",isAuthenticated , getDoctors);
 router.get("/getalldoctor",isAuthenticated , getAllDoctors);
 router.post("/createAppointment",isAuthenticated, createAppointment);
+router.post("/getappointments",isAuthenticated , getAppointments);
 
 
 

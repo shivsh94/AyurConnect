@@ -4,6 +4,7 @@ import axios from "axios";
 
 const AppointmentPage = () => {
   const { doctorId } = useParams();
+
   const [formData, setFormData] = useState({
     doctorId: doctorId,
     appointmentDate: "",
