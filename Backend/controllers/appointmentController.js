@@ -70,12 +70,12 @@ export const createAppointment = async (req, res) => {
 export const getAppointments = async (req, res) => {
   try {  
     const data = req.body;
-    console.log(data);
+    console.log( "data",data);
     
     const doctorId = data.doctorId;
     const appointments = await Appointment.find({ doctorId: doctorId });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Appointments fetched successfully",
       data: appointments,
@@ -89,3 +89,4 @@ export const getAppointments = async (req, res) => {
     });
   }
 };
+

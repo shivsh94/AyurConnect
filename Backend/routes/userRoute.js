@@ -20,6 +20,8 @@ router.get("/getdoctor",isAuthenticated , getDoctors);
 router.get("/getalldoctor",isAuthenticated , getAllDoctors);
 router.post("/createAppointment",isAuthenticated, createAppointment);
 router.post("/getappointments",isAuthenticated , getAppointments);
+// router.get("/getallappointments",isAuthenticated , getAppointments);
+// router.get("/getRequestedAppointments",isAuthenticated , getRequestedAppointments);
 
 
 
