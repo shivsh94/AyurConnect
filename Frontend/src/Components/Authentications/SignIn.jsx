@@ -1,31 +1,96 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useDispatch, useSelector  } from "react-redux";
-import { login } from "../../features/login/loginSlice";
+import { useAuth } from "../../contexts/AuthContext";
+import { MdVerified } from "react-icons/md";
 
 function SignIn() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [emailForOtp, setEmailForOtp] = useState("");
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [storedPassword, setStoredPassword] = useState("");
 
-  const dispatch = useDispatch();
+  const { loginUser, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const currUser = useSelector((state) => state.login.currentUser);
-
+  // Handle login form submit
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      if(!user.email || !user.password){
+      if (!user.email || !user.password) {
         return toast.error("Please fill all the fields");
       }
+
+      const result = await loginUser(user.email, user.password);
+      
+      if (result.success) {
+        if (result.user.isDoctor) {
+          navigate("/doctor/Docdashboard");
+        } else {
+          navigate("/patient/dashboard");
+        }
+      } else if (result.message === "Email is not verified") {
+        // If backend says email is not verified, show OTP input
+        setShowOtp(true);
+        setEmailForOtp(user.email);
+        toast("Please verify your email with OTP");
+      } else if (result.message === "User does not exist") {
+        // New user flow - show OTP for registration
+        setShowOtp(true);
+        setEmailForOtp(user.email);
+        setStoredPassword(user.password); // Store password for later use
+        setIsNewUser(true);
+        toast("Welcome! Please verify your email to continue");
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        if (error.response.data.message === "Email is not verified") {
+          setShowOtp(true);
+          setEmailForOtp(user.email);
+          toast("Please verify your email with OTP");
+        } else if (error.response.data.message === "User does not exist") {
+          // New user flow - show OTP for registration
+          setShowOtp(true);
+          setEmailForOtp(user.email);
+          setStoredPassword(user.password); // Store password for later use
+          setIsNewUser(true);
+          toast("Welcome! Please verify your email to continue");
+        } else {
+          toast.error(error.response.data.message);
+        }
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+    }
+    setUser({
+      email: "",
+      password: "",
+    });
+  };
+
+  // Handle OTP form submit
+  const onOtpSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (!otp || otp === "") {
+        toast.error("Please enter OTP");
+        return;
+      }
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/v1/user/signin`,
-        user,
+        `${import.meta.env.VITE_API_URL}/api/v1/user/verifyEmail`,
+        { otp, email: emailForOtp },
         {
           headers: {
             "Content-Type": "application/json",
@@ -35,123 +100,214 @@ function SignIn() {
       );
 
       if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        dispatch(login(res.data.user)); 
-        if(res.data.user.isDoctor){
-          navigate("/Doctor/Docdashboard");
-        }else{
-          navigate("/Patient/dashboard");
-        } 
+        toast.success(res.data.message);
+        setShowOtp(false);
+        setOtp("");
+
+        if (isNewUser) {
+          // For new users, show registration form or auto-login
+          toast.success("Email verified! You can now login.");
+          setIsNewUser(false);
+        } else {
+          // For existing users, try to login again
+          const loginResult = await loginUser(emailForOtp, storedPassword);
+          if (loginResult.success) {
+            if (loginResult.user.isDoctor) {
+              navigate("/doctor/Docdashboard");
+            } else {
+              navigate("/patient/dashboard");
+            }
+          }
+        }
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to verify OTP");
+      }
+    }
+  };
+
+  // Handle resend OTP
+  const handleGetOtp = async () => {
+    try {
+      setIsButtonDisabled(true);
+      setTimer(60);
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/user/send-otp`,
+        { email: emailForOtp },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
         toast.success(res.data.message);
       }
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response && error.response.data) {
         toast.error(error.response.data.message);
       } else {
-        // Fallback for unexpected errors
-        toast.error("An unexpected error occurred");
+        toast.error("Failed to send OTP");
       }
-      console.log(error);
     }
-    setUser({
-      email: "",
-      password: "",
-    });
   };
 
-  return (
-    <div className="w-full h-[100vh] bg-black flex items-center justify-center ">
-      <div className="w-full md:w-[60vh] h-[70vh] bg-black  px-10 md:px-0">
-        <h1 className="text-4xl font-medium text-white tracking-tighter mb-4">
-          Sign in
-        </h1>
-        <h3 className="text-white font-medium text-sm">
-          See your growth and get consulting support!
-        </h3>
-        <button className="flex items-center justify-center border gap-2 rounded-full w-full py-2 mt-10 bg-indigo-100 hover:bg-indigo-300 transition-all duration-300 ease-in-out focus:shadow-outline focus:outline-none">
-          <div className="bg-black p-2  rounded-full">
-            <svg className="w-4" viewBox="0 0 533.5 544.3">
-              <path
-                d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
-                fill="#4285f4"
-              />
-              <path
-                d="M272.1 544.3c73.4 0 135.3-24.1 180.4-65.7l-87.7-68c-24.4 16.6-55.9 26-92.6 26-71 0-131.2-47.9-152.8-112.3H28.9v70.1c46.2 91.9 140.3 149.9 243.2 149.9z"
-                fill="#34a853"
-              />
-              <path
-                d="M119.3 324.3c-11.4-33.8-11.4-70.4 0-104.2V150H28.9c-38.6 76.9-38.6 167.5 0 244.4l90.4-70.1z"
-                fill="#fbbc04"
-              />
-              <path
-                d="M272.1 107.7c38.8-.6 76.3 14 104.4 40.8l77.7-77.7C405 24.6 339.7-.8 272.1 0 169.2 0 75.1 58 28.9 150l90.4 70.1c21.5-64.5 81.8-112.4 152.8-112.4z"
-                fill="#ea4335"
-              />
-            </svg>
-          </div>
-          <a
-            className="whitespace-nowrap bg-transparent text-black"
-            href="http://localhost:8000/auth/google"
-          >
-            Sign in with Google
-          </a>
-        </button>
-        <div className="flex mt-6 items-center">
-          <div className="w-1/4 h-[1px] bg-slate-300"></div>
-          <h4 className="p-4 text-gray-300 ">or Sign in with Email</h4>
-          <div className="w-1/4 h-[1px] bg-slate-300"></div>
+  // Timer effect for resend OTP button
+  useEffect(() => {
+    let interval;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) {
+            setIsButtonDisabled(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
         <div>
-          <form onSubmit={onSubmit} action="">
-            <input
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-              type="email"
-              className="border w-full text-black rounded-full pl-6 p-3 mt-4"
-              placeholder="Email"
-            />
-            <input
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-              type="password"
-              className="border w-full text-black rounded-full pl-6 p-3 mt-4"
-              placeholder="Password"
-            />
-            <div className="flex  mt-5 justify-between items-center">
-              <div className="flex gap-3 justify-between">
-                <input className="accent-indigo-400" type="checkbox" />
-                <span className="text-white">Remember me</span>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in to your account
+          </h2>
+        </div>
+
+        {!showOtp ? (
+          <form className="mt-8 space-y-6" onSubmit={onSubmit}>
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div>
+                <label htmlFor="email" className="sr-only">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                  placeholder="Email address"
+                  value={user.email}
+                  onChange={(e) =>
+                    setUser({ ...user, email: e.target.value })
+                  }
+                />
               </div>
               <div>
-                <a
-                  href="/"
-                  className="text-indigo-300 hover:text-indigo-400 transition-all duration-300 ease-in-out"
-                >
-                  Forgot Password?
-                </a>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                  placeholder="Password"
+                  value={user.password}
+                  onChange={(e) =>
+                    setUser({ ...user, password: e.target.value })
+                  }
+                />
               </div>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-indigo-500 rounded-full  text-white p-2 mt-4  hover:bg-indigo-600 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none "
-            >
-              Sign in
-            </button>
+
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Signing in..." : "Sign in"}
+              </button>
+            </div>
           </form>
-          <div className="mt-5 text-white">
-            <span>Not Registered yet?</span>
-            <a
-              href="/signup"
-              className="text-indigo-300 hover:text-indigo-400 transition-all duration-300 ease-in-out ml-2"
-            >
-              Create an Account
-            </a>
-          </div>
-        </div>
+        ) : (
+          <form className="mt-8 space-y-6" onSubmit={onOtpSubmit}>
+            <div className="text-center">
+              <MdVerified className="mx-auto h-12 w-12 text-green-600" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                Email Verification Required
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Please enter the OTP sent to {emailForOtp}
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="otp" className="sr-only">
+                OTP
+              </label>
+              <input
+                id="otp"
+                name="otp"
+                type="text"
+                required
+                className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                placeholder="Enter 6-digit OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={6}
+              />
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Verify OTP
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGetOtp}
+                disabled={isButtonDisabled}
+                className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isButtonDisabled
+                  ? `Resend OTP in ${timer}s`
+                  : "Resend OTP"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowOtp(false);
+                  setOtp("");
+                  setIsNewUser(false);
+                }}
+                className="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Back to Login
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

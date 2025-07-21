@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import img from "../../assets/doc.png";
 import RequestedAppointments from "./Requested";
 import PatientList from "./PatientList";
@@ -15,16 +15,13 @@ function Doctor() {
   const [blogs, setBlogs] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-
+  const navigate = useNavigate();
   const doctor = useSelector((state) => state.login.currentUser);
-  
-  console.log(doctor);
 
   const doctors = {
     name: doctor.name,
     specialization:  doctor.speciality,
     contact:  doctor.phone,
-    // email: "dr.johndoe@gmail.com",
     experience:  doctor.experience,
     location:  doctor.clinic,
     rating: 3.5,
@@ -57,6 +54,10 @@ function Doctor() {
     setIsPopupOpen(!isPopupOpen);
   };
 
+  const handleProfileClick = () => {
+    navigate('/doctor/profile');
+  };
+
   return (
     <div className="bg-black">
 
@@ -70,8 +71,16 @@ function Doctor() {
             <p className="text-gray-400">{doctor.experience}</p>
             <p className="text-gray-400">{doctor.clinic}</p>
             <p className="text-gray-400">{doctor.phone}</p>
-            {/* <p className="text-gray-400">{doctor.email}</p> */}
             <StarRating rating={Math.round(doctors.rating)} />
+            
+            {/* Profile Button */}
+            <button
+              onClick={handleProfileClick}
+              className="w-1/2 cursor-pointer border border-blue-200 rounded-full h-12 px-5 font-bold hover:shadow-xl hover:scale-105 duration-300 transition-all text-blue-200 hover:text-white hover:bg-blue-600"
+            >
+              View Profile
+            </button>
+            
             <button
               onClick={togglePopup}
               className="w-1/2 cursor-pointer border border-yellow-200 rounded-full h-12 px-5 font-bold hover:shadow-xl hover:scale-105 duration-300 transition-all"

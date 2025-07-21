@@ -1,57 +1,81 @@
-import './App.css';
-import Home from "./pages/PatientHomePage/Home";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Authentication Components
+import Registration from './Components/Authentications/Register/Registration';
 import SignIn from './Components/Authentications/SignIn';
-import SignUp from './Components/Authentications/SignUp';
-import Registrarion from  './Components/Authentications/Register/Registrarion';
-import Doctor from './pages/DoctorHomePage/Doctor';
-// import Video from './Components/PatientHomePage/Video';
-import PatientHome from './pages/PatientHomePage/PatientHome';
-import AboutUs from './pages/PatientHomePage/AboutUs';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import DocHome from './pages/DoctorHomePage/DocHome';
-import DoctorProfile from './Components/Profile/doctorProfile';
-import OtpPage from './Components/Authentications/Otp';
+
+// Page Components
 import Homepage from './pages/Home/Homepage';
-import axios from 'axios';
+import Home from './pages/PatientHomePage/Home';
+import DocHome from './pages/DoctorHomePage/DocHome';
+import PatientHome from './pages/PatientHomePage/PatientHome';
+import Doctor from './pages/DoctorHomePage/Doctor';
+import DoctorProfile from './pages/DoctorHomePage/DoctorProfile';
+import DoctorAppointments from './pages/DoctorHomePage/DoctorAppointments';
 import Appointment from './pages/Appointment/appointment';
+import AboutUs from './pages/PatientHomePage/AboutUs';
+import PatientProfile from './Components/Profile/patientProfile';
+import PatientAppointments from './pages/PatientHomePage/PatientAppointments';
 
-axios.defaults.baseURL = "http://localhost:5000/api/v1/user";
-axios.defaults.withCredentials = true;
+// Protected Route Component
+import ProtectedRoute from './components/ProtectedRoute';
 
+// 404 Error Component
+const NotFound = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="text-center">
+      <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
+      <p className="text-xl text-gray-600 mb-8">Page Not Found</p>
+      <a 
+        href="/" 
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Go Home
+      </a>
+    </div>
+  </div>
+);
 
 function App() {
-
   return (
     <BrowserRouter>
       <Routes>
-      <Route path="/" element={<Homepage />} />
-        <Route path="/signup" element={<SignUp />} />
+        {/* Public Routes */}
+        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<SignIn />} />
-        <Route path="/otp" element={<OtpPage />} />
-        <Route path="/registration" element={<Registrarion />} />
-        {/* <Route path="/Profile/:id" element={<DoctorProfile />} /> */}
+        <Route path="/registration" element={<Registration />} />
 
-        <Route path="/Profile/*" element={<Home />}>
-          <Route path=":id" element={<DoctorProfile />} />
-        </Route>
-        
-        {/* Parent route for Patient */}
-        <Route path="/Patient/*" element={<Home />}>
-          <Route path="dashboard" element={<PatientHome/>} />
+        {/* Patient Routes - Protected */}
+        <Route path="/patient/*" element={
+          <ProtectedRoute allowedRoles={['patient']}>
+            <Home />
+          </ProtectedRoute>
+        }>
+          <Route index element={<PatientHome />} />
+          <Route path="dashboard" element={<PatientHome />} />
           <Route path="about-us" element={<AboutUs />} />
-          <Route path=":doctorId/appointments" element={<Appointment/>} />
-
-           
+          <Route path=":doctorId/appointments" element={<Appointment />} />
+          <Route path="profile" element={<PatientProfile />} />
+          <Route path="appointments" element={<PatientAppointments />} />
         </Route>
 
-        <Route path="/Doctor/*" element={<DocHome />} >
+        {/* Doctor Routes - Protected */}
+        <Route path="/doctor/*" element={
+          <ProtectedRoute allowedRoles={['doctor']}>
+            <DocHome />
+          </ProtectedRoute>
+        }>
+          <Route index element={<Doctor />} />
           <Route path="Docdashboard" element={<Doctor />} />
+          <Route path="profile" element={<DoctorProfile />} />
+          <Route path="appointments" element={<DoctorAppointments />} />
+          <Route path="patients" element={<Doctor />} />
+          <Route path="blogs" element={<Doctor />} />
         </Route>
-        
-         
-        <Route path="*" element={<div>404 Error - Page Not Found</div>} />
+
+        {/* 404 Route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

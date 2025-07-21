@@ -22,7 +22,7 @@ function PatientHome() {
   useEffect(() => {
     const fetchAllDoctors = async () => {
       try {
-        const response = await axios.get("/getalldoctor");
+        const response = await axios.get("/api/v1/user/getalldoctor");
         console.log(response.data);
         if (response.data.success) {
           // console.log(response.data);
@@ -118,7 +118,7 @@ function PatientHome() {
           <DoctorCards />
           <button className="mt-7 hover:scale-105 transition-shadow duration-500 ">
             <a
-              href="/Patient/dashboard"
+              href="/patient/dashboard"
               className="text-green-400 border rounded-md border-yellow-200 hover:border-yellow-300  p-3"
             >
               View More
@@ -131,7 +131,7 @@ function PatientHome() {
             <DoctorCards />
             <button className="mt-7 hover:scale-105 transition-shadow duration-500 ">
               <a
-                href="/Patient/dashboard"
+                href="/patient/dashboard"
                 className="text-green-400 border rounded-md border-yellow-200 hover:border-yellow-300  p-3"
               >
                 View More

@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    currentDoctor: JSON.parse(localStorage.getItem("doctor")) || null,
+    currentDoctor: JSON.parse(localStorage.getItem("doctors")) || [],
+    loading: false,
+    error: null
 };
-console.log("initialState", initialState.currentDoctor);
 
 export const doctorSlice = createSlice({
     name: "doctor",
@@ -11,14 +12,25 @@ export const doctorSlice = createSlice({
     reducers: {
         loadDoctor: (state, action) => {
             state.currentDoctor = action.payload;
-            localStorage.setItem("doctor", JSON.stringify(action.payload));
+            state.loading = false;
+            state.error = null;
+            localStorage.setItem("doctors", JSON.stringify(action.payload));
         },
         clearDoctor: (state) => {
-            state.currentDoctor = null;
-            localStorage.removeItem("doctor");
+            state.currentDoctor = [];
+            state.loading = false;
+            state.error = null;
+            localStorage.removeItem("doctors");
         },
+        setLoading: (state, action) => {
+            state.loading = action.payload;
+        },
+        setError: (state, action) => {
+            state.error = action.payload;
+            state.loading = false;
+        }
     },
 });
 
-export const { loadDoctor, clearDoctor } = doctorSlice.actions;
+export const { loadDoctor, clearDoctor, setLoading, setError } = doctorSlice.actions;
 export default doctorSlice.reducer;

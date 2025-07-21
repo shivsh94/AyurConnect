@@ -1,8 +1,6 @@
 import React from 'react'
-// import NavLink from 'react-router-dom'
 import DocNavbar from './DocNavbar';
-import { NavLink, Outlet } from 'react-router-dom';
-// import Footer from './Footer';
+import { Outlet } from 'react-router-dom';
 import DocFooter from './DocFooter';
 
 function DocHome() {

@@ -1,100 +1,147 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, NavLink } from "react-router-dom";
 import logo from '../../assets/logo.png';
 import axios from "axios";
-import { useDispatch, useSelector } from 'react-redux';
-import { login, logout } from '../../features/login/loginSlice';
+import { useAuth } from '../../contexts/AuthContext';
 import {loadDoctor, clearDoctor} from '../../features/doctor/doctorSlice';
+import { useDispatch } from 'react-redux';
 
 function Navbar() {
   const dispatch = useDispatch();
-  const patient = useSelector((state) => state.login.currentUser);
-  const doctor = useSelector((state) => state.doctor.currentDoctor);
+  const { currentUser, logoutUser } = useAuth();
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [patientData, setPatientData] = useState(null);
 
   useEffect(() => {
-
     const fetchPatients = async () => {
       try {
-        const response = await axios.get("/getpatients");
+        const response = await axios.get("/api/v1/user/getpatients");
         if (response.data.success) {
-          console.log(response.data);
-          dispatch(login(response.data.data));
+          setPatientData(response.data.data);
         }
       } catch (error) {
         console.error("Error fetching patients:", error);
       }
     };
 
-    fetchPatients();
-  }, [dispatch]);
+    if (currentUser && !currentUser.isDoctor) {
+      fetchPatients();
+    }
+  }, [currentUser]);
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("/signout");
-      if (response.data.success) {
-        dispatch(logout());
-        dispatch(clearDoctor());
-        window.location.reload();
-      }
+      await logoutUser();
+      dispatch(clearDoctor());
+      setShowProfileDropdown(false);
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
 
+  const toggleProfileDropdown = () => {
+    setShowProfileDropdown(!showProfileDropdown);
+  };
 
   return (
-    <div className="w-full flex items-center justify-between h-36 bg-black">
-      {/* Logo Section */}
-      <div className="flex items-center p-10">
-        <Link to="/patient/dashboard">
-          <img
-            width={120}
-            height={120}
-            src={logo}
-            alt="Ayurconnect Logo"
-            className="rounded-full"
-          />
-        </Link>
+    <nav className="bg-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex-shrink-0 flex items-center">
+              <img className="h-8 w-auto" src={logo} alt="AyurConnect" />
+              <span className="ml-2 text-xl font-bold text-gray-900">AyurConnect</span>
+            </Link>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <NavLink
+              to="/patient/dashboard"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-700 hover:text-green-600 hover:bg-green-50'
+                }`
+              }
+            >
+              Dashboard
+            </NavLink>
+
+            <NavLink
+              to="/patient/about-us"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-700 hover:text-green-600 hover:bg-green-50'
+                }`
+              }
+            >
+              About Us
+            </NavLink>
+
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <button
+                onClick={toggleProfileDropdown}
+                className="flex items-center space-x-2 text-gray-700 hover:text-green-600 focus:outline-none focus:text-green-600"
+              >
+                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {currentUser?.email?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+                <span className="text-sm font-medium">
+                  {patientData?.name || currentUser?.email || 'User'}
+                </span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    showProfileDropdown ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {showProfileDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <Link
+                    to="/patient/profile"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowProfileDropdown(false)}
+                  >
+                    View Profile
+                  </Link>
+                  <Link
+                    to="/patient/appointments"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowProfileDropdown(false)}
+                  >
+                    My Appointments
+                  </Link>
+                  <hr className="my-1" />
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-
-      {/* Navigation Links */}
-      <div className="flex gap-5 text-[20px] pr-10 tracking-wider">
-        <NavLink to="/patient/dashboard" className="hover:text-blue-400 transition-colors duration-200">
-          Home
-        </NavLink>
-        <NavLink to="/patient/appointments" className="hover:text-blue-400 transition-colors duration-200">
-          Appointments
-        </NavLink>
-        <NavLink to="/patient/blogs" className="hover:text-blue-400 transition-colors duration-200">
-          Blogs
-        </NavLink>
-        <NavLink to="/patient/contact" className="hover:text-blue-400 transition-colors duration-200">
-          Contact Us
-        </NavLink>
-
-        {/* Show Login if No User, Otherwise Show Logout */}
-        {patient ? (
-          <button onClick={handleLogout} className="bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition">
-            Logout
-          </button>
-        ) : (
-          <NavLink to="/login" className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">
-            Login
-          </NavLink>
-        )}
-
-        {/* Patient Name Button */}
-        {patient && patient.PatientName ? (
-          <button className="bg-blue-400 text-white px-4 py-2 rounded-md">
-            {patient.PatientName}
-          </button>
-        ) : (
-          <button className="bg-gray-400 text-white px-4 py-1 rounded-md">
-            Guest
-          </button>
-        )}
-      </div>
-    </div>
+    </nav>
   );
 }
 
