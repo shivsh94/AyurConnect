@@ -10,7 +10,7 @@ function DoctorCard({ doctor }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer transform hover:scale-105 transition-transform duration-200">
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl cursor-pointer transform hover:scale-105 transition-all duration-300">
       <div className="p-6">
         <div className="flex items-center mb-4">
           <img
@@ -47,8 +47,8 @@ function DoctorCard({ doctor }) {
   );
 }
 
-function DoctorCards() {
-  const doctors = useSelector((state) => state.doctor.currentDoctor) || [];
+function DoctorCards({ doctors: propDoctors }) {
+  const doctors = propDoctors || useSelector((state) => state.doctor.currentDoctor) || [];
 
   if (!doctors || doctors.length === 0) {
     return (
@@ -59,7 +59,7 @@ function DoctorCards() {
           </svg>
         </div>
         <h3 className="text-xl font-semibold text-gray-600 mb-2">No Doctors Found</h3>
-        <p className="text-gray-500">Please try a different search or check back later.</p>
+        <p className="text-gray-500">Please try a different search or filter criteria.</p>
       </div>
     );
   }

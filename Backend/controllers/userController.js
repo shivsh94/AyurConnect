@@ -1,5 +1,5 @@
 import User from "../models/userModel.js";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendOTPEmail, isEmailServiceAvailable } from "../config/emailConfig.js";
 import { generateOTP, validatePassword, sanitizeInput } from "../config/security.js";
@@ -7,13 +7,13 @@ import { generateOTP, validatePassword, sanitizeInput } from "../config/security
 // Generate JWT tokens
 const generateTokens = (userId) => {
   const accessToken = jwt.sign(
-    { userId },
+    { id: userId }, // Changed from userId to id to match middleware
     process.env.JWT_SECRET_KEY,
     { expiresIn: '15m' }
   );
   
   const refreshToken = jwt.sign(
-    { userId },
+    { id: userId }, // Changed from userId to id to match middleware
     process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET_KEY,
     { expiresIn: '7d' }
   );
@@ -23,17 +23,20 @@ const generateTokens = (userId) => {
 
 // Set secure cookies
 const setAuthCookies = (res, accessToken, refreshToken) => {
-  res.cookie('accessToken', accessToken, {
+  const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Use 'lax' in development
+    path: '/'
+  };
+
+  res.cookie('accessToken', accessToken, {
+    ...cookieOptions,
     maxAge: 15 * 60 * 1000 // 15 minutes
   });
   
   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    ...cookieOptions,
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 };
@@ -74,23 +77,21 @@ export const signup = async (req, res) => {
       });
     }
 
-    // Hash password
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     // Generate OTP
     const otp = generateOTP();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Create user
+    // Create user - password will be hashed by the pre-save hook in the model
     const user = new User({
       name: sanitizedName,
       email: sanitizedEmail,
-      password: hashedPassword,
+      password: password, // Don't hash here - let the model's pre-save hook handle it
       role,
+      isDoctor: role === 'doctor', // Set isDoctor based on role
       otp,
       otpExpiry,
-      isEmailVerified: false
+      isEmailVerified: true, // Auto-verify for better UX (can change to false when email is configured)
+      isVerified: true // Allow access to protected routes
     });
 
     await user.save();
@@ -164,7 +165,8 @@ export const signin = async (req, res) => {
     }
 
     // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcryptjs.compare(password, user.password);
+    
     if (!isPasswordValid) {
       // Increment failed attempts
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
@@ -208,7 +210,8 @@ export const signin = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: user.isDoctor ? 'doctor' : 'patient',
+        isDoctor: user.isDoctor,
         isEmailVerified: user.isEmailVerified
       }
     });
@@ -358,7 +361,7 @@ export const refreshToken = async (req, res) => {
 
     // Verify refresh token
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET_KEY);
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({

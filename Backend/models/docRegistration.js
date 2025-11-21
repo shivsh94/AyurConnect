@@ -15,7 +15,7 @@ const doctorSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    required: true,
+    required: false,
   },
   age: {
     type: Number,
@@ -36,6 +36,10 @@ const doctorSchema = new mongoose.Schema({
   experience: { // Changed from Experience to experience (camelCase)
     type: Number,
     required: true,
+  },
+  education: {
+    type: String,
+    required: false,
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

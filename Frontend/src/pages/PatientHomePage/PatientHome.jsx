@@ -8,8 +8,53 @@ import {loadDoctor, clearDoctor} from '../../features/doctor/doctorSlice';
 
 function PatientHome() {
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSpeciality, setSelectedSpeciality] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [minExperience, setMinExperience] = useState(0);
+  
   const dispatch = useDispatch();
-  const doctor = useSelector((state) => state.doctor.currentDoctor);
+  const allDoctors = useSelector((state) => state.doctor.currentDoctor);
+
+  // Filter and search doctors
+  const filteredDoctors = React.useMemo(() => {
+    if (!allDoctors || !Array.isArray(allDoctors)) return [];
+    
+    let filtered = [...allDoctors];
+
+    // Search by name or speciality
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(doc => 
+        doc.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.speciality?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.clinic?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by speciality
+    if (selectedSpeciality) {
+      filtered = filtered.filter(doc => 
+        doc.speciality?.toLowerCase() === selectedSpeciality.toLowerCase()
+      );
+    }
+
+    // Filter by experience
+    if (minExperience > 0) {
+      filtered = filtered.filter(doc => (doc.experience || 0) >= minExperience);
+    }
+
+    // Sort
+    if (sortBy === 'experience-high') {
+      filtered.sort((a, b) => (b.experience || 0) - (a.experience || 0));
+    } else if (sortBy === 'experience-low') {
+      filtered.sort((a, b) => (a.experience || 0) - (b.experience || 0));
+    } else if (sortBy === 'name') {
+      filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+
+    return filtered;
+  }, [allDoctors, searchTerm, selectedSpeciality, sortBy, minExperience]);
 
 
   // Toggle sort dropdown
@@ -17,7 +62,26 @@ function PatientHome() {
     setIsSortOpen(!isSortOpen);
   };
 
-  const [searchTerm, setSearchTerm] = useState("");
+  // Toggle filter dropdown
+  const toggleFilterDropdown = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
+  // Handle sort selection
+  const handleSort = (value) => {
+    setSortBy(value);
+    setIsSortOpen(false);
+  };
+
+  // Handle filter clear
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedSpeciality("");
+    setSortBy("");
+    setMinExperience(0);
+  };
+
+  const [searchTermState, setSearchTermState] = useState("");
 
   useEffect(() => {
     const fetchAllDoctors = async () => {
@@ -48,7 +112,9 @@ function PatientHome() {
           <div className="relative col-span-4 w-full">
             <input
               type="text"
-              placeholder="Search by Disease"
+              placeholder="Search by doctor name, speciality, or clinic"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-4 border border-yellow-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
             />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 bg-transparent">
@@ -75,29 +141,97 @@ function PatientHome() {
               className="text-lg border border-yellow-300 rounded-md px-2 py-2 pr-28"
               onClick={toggleSortDropdown}
             >
-              Sort By :
+              Sort By {sortBy && ': ' + sortBy}
             </button>
             {isSortOpen && (
-              <div className="absolute w-full top-full left-0 mt-1 bg-white border rounded-md shadow-lg">
+              <div className="absolute w-full top-full left-0 mt-1 bg-white border rounded-md shadow-lg z-10">
                 <ul className="py-1">
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    Sort by Popularity
+                  <li 
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800"
+                    onClick={() => handleSort('experience-high')}
+                  >
+                    Experience (High to Low)
                   </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    Option 2
+                  <li 
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800"
+                    onClick={() => handleSort('experience-low')}
+                  >
+                    Experience (Low to High)
                   </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    Option 3
+                  <li 
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800"
+                    onClick={() => handleSort('name')}
+                  >
+                    Name (A-Z)
+                  </li>
+                  <li 
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800 border-t"
+                    onClick={() => { setSortBy(''); setIsSortOpen(false); }}
+                  >
+                    Clear Sort
                   </li>
                 </ul>
               </div>
             )}
           </div>
           
-          <div className="w-full">
-            <button className="text-lg border border-yellow-300 rounded-md px-2 py-2 pr-28">
-              Filter
+          <div className="relative w-full">
+            <button 
+              className="text-lg border border-yellow-300 rounded-md px-2 py-2 pr-28"
+              onClick={toggleFilterDropdown}
+            >
+              Filter {(selectedSpeciality || minExperience > 0) && '✓'}
             </button>
+            {isFilterOpen && (
+              <div className="absolute w-64 top-full right-0 mt-1 bg-white border rounded-md shadow-lg z-10 p-4">
+                <h3 className="font-semibold mb-2 text-gray-800">Filter Options</h3>
+                
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Speciality
+                  </label>
+                  <select
+                    value={selectedSpeciality}
+                    onChange={(e) => setSelectedSpeciality(e.target.value)}
+                    className="w-full border border-gray-300 rounded px-2 py-1 text-gray-800"
+                  >
+                    <option value="">All Specialities</option>
+                    <option value="Kayachikitsa">Kayachikitsa</option>
+                    <option value="Shalya Tantra">Shalya Tantra</option>
+                    <option value="Shalakya Tantra">Shalakya Tantra</option>
+                    <option value="Kaumarabhritya">Kaumarabhritya</option>
+                    <option value="Agada Tantra">Agada Tantra</option>
+                    <option value="Rasayana">Rasayana</option>
+                    <option value="Vajikarana">Vajikarana</option>
+                    <option value="Bhuta Vidya">Bhuta Vidya</option>
+                    <option value="Swasthavritta">Swasthavritta</option>
+                    <option value="Prasuti Tantra">Prasuti Tantra</option>
+                    <option value="General Ayurvedic Medicine">General Ayurvedic Medicine</option>
+                  </select>
+                </div>
+
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Minimum Experience: {minExperience} years
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="30"
+                    value={minExperience}
+                    onChange={(e) => setMinExperience(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                <button
+                  onClick={() => { clearFilters(); setIsFilterOpen(false); }}
+                  className="w-full bg-red-500 text-white py-1 rounded hover:bg-red-600"
+                >
+                  Clear Filters
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -112,32 +246,36 @@ function PatientHome() {
           </div>
         </div>
         <div className="col-span-3 ">
-          <h1 className=" text-2xl font-bold mb-5 text-green-400">
-            AI Recomended Doctors
-          </h1>
-          <DoctorCards />
-          <button className="mt-7 hover:scale-105 transition-shadow duration-500 ">
-            <a
-              href="/patient/dashboard"
-              className="text-green-400 border rounded-md border-yellow-200 hover:border-yellow-300  p-3"
-            >
-              View More
-            </a>
-          </button>
-          <div className="mb-10">
-            <h1 className=" text-2xl mt-10 font-bold mb-5 text-green-400">
-              Search Based Doctors
+          <div className="flex justify-between items-center mb-5">
+            <h1 className="text-2xl font-bold text-green-400">
+              {searchTerm || selectedSpeciality || minExperience > 0 || sortBy 
+                ? 'Filtered Doctors' 
+                : 'All Doctors'}
             </h1>
-            <DoctorCards />
-            <button className="mt-7 hover:scale-105 transition-shadow duration-500 ">
-              <a
-                href="/patient/dashboard"
-                className="text-green-400 border rounded-md border-yellow-200 hover:border-yellow-300  p-3"
+            {(searchTerm || selectedSpeciality || minExperience > 0 || sortBy) && (
+              <button
+                onClick={clearFilters}
+                className="text-sm bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
               >
-                View More
-              </a>
-            </button>
+                Clear All Filters
+              </button>
+            )}
           </div>
+          <div className="mb-4 text-gray-600">
+            Showing {filteredDoctors.length} doctor{filteredDoctors.length !== 1 ? 's' : ''}
+          </div>
+          <DoctorCards doctors={filteredDoctors} />
+          
+          {!searchTerm && !selectedSpeciality && minExperience === 0 && (
+            <>
+              <div className="mb-10 mt-10">
+                <h1 className="text-2xl mt-10 font-bold mb-5 text-green-400">
+                  Recently Joined Doctors
+                </h1>
+                <DoctorCards doctors={allDoctors?.slice(0, 6) || []} />
+              </div>
+            </>
+          )}
           <div>
             <h1 className="text-2xl text-green-300 mb-10">
               Ayurvedic Consultation at Your Fingertips: The Power of Online

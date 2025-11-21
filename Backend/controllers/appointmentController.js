@@ -9,7 +9,7 @@ export const createAppointment = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized: User not logged in" });
     }
 
-    let { doctorId, appointmentTime, appointmentDate } = req.body;
+    let { doctorId, appointmentTime, appointmentDate, reason } = req.body;
 
     if (!doctorId || !appointmentTime || !appointmentDate) {
       return res.status(400).json({ message: "All fields are required" });
@@ -48,7 +48,8 @@ export const createAppointment = async (req, res) => {
       doctorId,
       patientId: user._id,
       appointmentTime: appointmentDate,
-      appointmentDate, 
+      appointmentDate,
+      reason: reason || ''
     });
 
     await newAppointment.save();

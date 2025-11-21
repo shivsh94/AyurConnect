@@ -28,12 +28,16 @@ export const AuthProvider = ({ children }) => {
         
         // Check if user is already logged in from localStorage
         const storedUser = authService.getCurrentUser();
+        console.log("AuthContext init - stored user:", storedUser);
+        
         if (storedUser) {
           // Verify token with backend
           const { isAuthenticated, user } = await authService.checkAuthStatus();
+          console.log("AuthContext init - checkAuthStatus result:", { isAuthenticated, user });
           
           if (isAuthenticated && user) {
             dispatch(login(user));
+            console.log("AuthContext init - dispatched login with user:", user);
           } else {
             // Token is invalid, clear stored data
             authService.clearAuthData();

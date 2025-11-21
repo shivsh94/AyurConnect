@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Authentication Components
 import Registration from './Components/Authentications/Register/Registration';
 import SignIn from './Components/Authentications/SignIn';
+import Signup from './Components/Authentications/Signup';
 
 // Page Components
 import Homepage from './pages/Home/Homepage';
@@ -44,6 +45,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<SignIn />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/registration" element={<Registration />} />
 
         {/* Patient Routes - Protected */}

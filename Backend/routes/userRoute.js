@@ -8,7 +8,7 @@ import {
   refreshToken,
   getProfile
 } from "../controllers/userController.js";
-import {doctorRegistration, getAllDoctors, getDoctors, getPatients} from "../controllers/registerController.js";
+import {doctorRegistration, getAllDoctors, getDoctors, getPatients, updateDoctor, updatePatient} from "../controllers/registerController.js";
 import {patientsRegistration} from "../controllers/registerController.js";
 import isAuthenticated from "../middleware/isAuthenticated.js";
 import { createAppointment, getAppointments, getPatientAppointments, getDoctorAppointments, cancelAppointment, acceptAppointment, declineAppointment } from "../controllers/appointmentController.js";
@@ -34,6 +34,8 @@ router.post("/patientsRegistration", isAuthenticated, patientsRegistration);
 router.get("/getpatients", isAuthenticated, getPatients);
 router.get("/getdoctor", isAuthenticated, getDoctors);
 router.get("/getalldoctor", isAuthenticated, getAllDoctors);
+router.put("/updatedoctor", isAuthenticated, updateDoctor);
+router.put("/updatepatient", isAuthenticated, updatePatient);
 
 // Public routes
 router.get("/public/doctors", getAllDoctors);

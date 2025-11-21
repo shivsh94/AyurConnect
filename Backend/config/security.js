@@ -110,12 +110,9 @@ export const securityConfig = {
 
 // Generate OTP function
 export const generateOTP = (length = 6) => {
-  const digits = '0123456789';
-  let otp = '';
-  for (let i = 0; i < length; i++) {
-    otp += digits[Math.floor(Math.random() * digits.length)];
-  }
-  return otp;
+  const min = Math.pow(10, length - 1);
+  const max = Math.pow(10, length) - 1;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 // Password validation function

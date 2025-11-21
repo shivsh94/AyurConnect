@@ -18,15 +18,17 @@ const Homepage = () => {
           Bridging Patients and Ayurvedic Doctors for a Healthier Tomorrow
         </p>
         <div className="flex gap-6">
+          <Link to="/signup">
+            <button className="px-8 py-3 bg-green-600 text-white font-bold rounded-full shadow-lg hover:bg-green-700 transition-all text-lg">
+              Sign Up
+            </button>
+          </Link>
           <Link to="/login">
             <button className="px-8 py-3 bg-white text-black font-bold rounded-full shadow-lg hover:bg-gray-200 transition-all text-lg">
-              Get Started
+              Sign In
             </button>
           </Link>
         </div>
-        <p className="text-sm text-gray-400 mt-4 text-center max-w-md">
-          New users will be automatically registered after email verification
-        </p>
       </div>
     </div>
   );

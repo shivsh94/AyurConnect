@@ -110,16 +110,26 @@ function Patients() {
 
       if (res.data.success) {
         toast.success("Patient profile completed successfully!");
-        // Redirect to patient dashboard
+        // Redirect to patient dashboard with page reload to refresh auth state
         setTimeout(() => {
-          navigate("/patient/dashboard");
-        }, 1500);
+          window.location.href = "/patient/dashboard";
+        }, 1000);
       }
     } catch (error) {
       console.error("Error in Patient registration:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to complete profile. Please try again."
-      );
+      
+      // If user already registered, redirect to dashboard
+      if (error.response?.status === 400 && 
+          error.response?.data?.message?.includes("already registered")) {
+        toast.info("You already have a patient profile. Redirecting to dashboard...");
+        setTimeout(() => {
+          window.location.href = "/patient/dashboard";
+        }, 1000);
+      } else {
+        toast.error(
+          error.response?.data?.message || "Failed to complete profile. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }

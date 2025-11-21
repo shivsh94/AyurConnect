@@ -8,12 +8,12 @@ class AuthService {
 
   // Setup axios interceptors for automatic token handling
   setupAxiosInterceptors() {
-    // Request interceptor to add token to headers
+    // Request interceptor - ensure credentials are included for cookie-based auth
     axios.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        // Only set withCredentials if not already set
+        if (config.withCredentials === undefined) {
+          config.withCredentials = true;
         }
         return config;
       },
@@ -30,21 +30,34 @@ class AuthService {
       async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Avoid infinite loops - only retry once and not for auth endpoints
+        if (
+          error.response?.status === 401 && 
+          !originalRequest._retry &&
+          !originalRequest.url?.includes('/signin') &&
+          !originalRequest.url?.includes('/signup') &&
+          !originalRequest.url?.includes('/refresh-token')
+        ) {
           originalRequest._retry = true;
 
           // Try to refresh token
           try {
             const refreshed = await this.refreshToken();
             if (refreshed) {
-              const token = localStorage.getItem('token');
-              originalRequest.headers.Authorization = `Bearer ${token}`;
               return axios(originalRequest);
+            } else {
+              // Refresh failed, logout user
+              this.clearAuthData();
+              if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+              }
             }
           } catch (refreshError) {
             // If refresh fails, logout user
-            this.logout();
-            window.location.href = '/login';
+            this.clearAuthData();
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
             return Promise.reject(refreshError);
           }
         }
@@ -57,24 +70,23 @@ class AuthService {
   // Check if user is authenticated
   async checkAuthStatus() {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
+      const user = localStorage.getItem('user');
+      if (!user) {
         return { isAuthenticated: false, user: null };
       }
 
-      const response = await axios.get(`${this.baseURL}/api/v1/user/me`, {
-        withCredentials: true
-      });
-
-      if (response.data.success) {
-        return { 
-          isAuthenticated: true, 
-          user: response.data.user 
-        };
-      }
+      // Parse stored user data
+      const userData = JSON.parse(user);
+      
+      // Return authenticated status based on localStorage
+      // Don't make API call to /profile since it doesn't exist
+      return { 
+        isAuthenticated: true, 
+        user: userData 
+      };
     } catch (error) {
       console.error('Auth check failed:', error);
-      // Clear invalid token
+      // Clear invalid data
       this.clearAuthData();
     }
 
@@ -95,16 +107,20 @@ class AuthService {
         }
       );
 
+      console.log("Raw signin response:", response.data);
+      
       if (response.data.success) {
-        // Store token in localStorage for axios interceptor
-        localStorage.setItem('token', response.data.token);
+        // Backend uses httpOnly cookies for JWT tokens, not response body tokens
+        // Store user data with role information (backend already sends isDoctor)
+        const userData = response.data.data;
         
-        // Store user data
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log("User data to store:", userData);
+        
+        localStorage.setItem('user', JSON.stringify(userData));
         
         return {
           success: true,
-          user: response.data.user,
+          user: userData,
           message: response.data.message
         };
       }
@@ -119,7 +135,7 @@ class AuthService {
   // Logout user
   async logout() {
     try {
-      await axios.post(`${this.baseURL}/api/v1/user/signout`, {}, {
+      await axios.post(`${this.baseURL}/api/v1/user/logout`, {}, {
         withCredentials: true
       });
     } catch (error) {
@@ -131,30 +147,21 @@ class AuthService {
 
   // Clear all authentication data
   clearAuthData() {
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.removeItem('refreshToken');
+    // Tokens are in httpOnly cookies, cleared by backend on logout
   }
 
   // Refresh token (if implemented)
   async refreshToken() {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        return false;
-      }
-
       const response = await axios.post(
         `${this.baseURL}/api/v1/user/refresh-token`,
-        { refreshToken },
+        {},
         { withCredentials: true }
       );
 
       if (response.data.success) {
-        localStorage.setItem('token', response.data.token);
-        if (response.data.refreshToken) {
-          localStorage.setItem('refreshToken', response.data.refreshToken);
-        }
+        // Cookies are refreshed automatically by backend
         return true;
       }
     } catch (error) {

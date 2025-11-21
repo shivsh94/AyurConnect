@@ -32,15 +32,57 @@ function SignIn() {
       const result = await loginUser(user.email, user.password);
       
       if (result.success) {
-        if (result.user.isDoctor) {
-          navigate("/doctor/Docdashboard");
-        } else {
-          navigate("/patient/dashboard");
+        console.log("Login result:", result);
+        console.log("User data:", result.user);
+        console.log("isDoctor?", result.user.isDoctor);
+        console.log("role?", result.user.role);
+        
+        // Check if user has completed their profile
+        const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3030";
+        
+        try {
+          if (result.user.isDoctor) {
+            // Check if doctor profile exists
+            const profileCheck = await axios.get(`${baseURL}/api/v1/user/getdoctor`, {
+              withCredentials: true
+            });
+            if (profileCheck.data.success) {
+              window.location.href = "/doctor/Docdashboard";
+            } else {
+              window.location.href = "/registration";
+            }
+          } else {
+            // Check if patient profile exists
+            const profileCheck = await axios.get(`${baseURL}/api/v1/user/getpatients`, {
+              withCredentials: true
+            });
+            if (profileCheck.data.success) {
+              window.location.href = "/patient/dashboard";
+            } else {
+              window.location.href = "/registration";
+            }
+          }
+        } catch (error) {
+          console.log("Profile check error:", error.response?.status);
+          // If profile doesn't exist (404), redirect to registration
+          if (error.response?.status === 404) {
+            console.log("Redirecting to registration...");
+            window.location.href = '/registration';
+          } else {
+            // For other errors, redirect to appropriate dashboard
+            if (result.user.isDoctor) {
+              window.location.href = "/doctor/Docdashboard";
+            } else {
+              window.location.href = "/patient/dashboard";
+            }
+          }
         }
+        return;
       } else if (result.message === "Email is not verified") {
         // If backend says email is not verified, show OTP input
         setShowOtp(true);
         setEmailForOtp(user.email);
+        setStoredPassword(user.password);
         toast("Please verify your email with OTP");
       } else if (result.message === "User does not exist") {
         // New user flow - show OTP for registration
@@ -49,6 +91,12 @@ function SignIn() {
         setStoredPassword(user.password); // Store password for later use
         setIsNewUser(true);
         toast("Welcome! Please verify your email to continue");
+      } else {
+        toast.error(result.message || "Login failed");
+        setUser({
+          email: "",
+          password: "",
+        });
       }
     } catch (error) {
       if (
@@ -59,6 +107,7 @@ function SignIn() {
         if (error.response.data.message === "Email is not verified") {
           setShowOtp(true);
           setEmailForOtp(user.email);
+          setStoredPassword(user.password);
           toast("Please verify your email with OTP");
         } else if (error.response.data.message === "User does not exist") {
           // New user flow - show OTP for registration
@@ -69,15 +118,19 @@ function SignIn() {
           toast("Welcome! Please verify your email to continue");
         } else {
           toast.error(error.response.data.message);
+          setUser({
+            email: "",
+            password: "",
+          });
         }
       } else {
         toast.error("An unexpected error occurred");
+        setUser({
+          email: "",
+          password: "",
+        });
       }
     }
-    setUser({
-      email: "",
-      password: "",
-    });
   };
 
   // Handle OTP form submit
@@ -243,6 +296,17 @@ function SignIn() {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Signing in..." : "Sign in"}
+              </button>
+            </div>
+
+            <div className="text-center text-sm">
+              <span className="text-gray-600">Don't have an account? </span>
+              <button
+                type="button"
+                onClick={() => navigate("/signup")}
+                className="font-medium text-green-600 hover:text-green-500"
+              >
+                Sign up
               </button>
             </div>
           </form>

@@ -30,7 +30,8 @@ const isAuthenticated = async (req, res, next) => {
     }
 
     // Extract token from cookies or Authorization header
-    const token = req.cookies?.token || 
+    const token = req.cookies?.accessToken || 
+                  req.cookies?.token ||
                   (req.headers?.authorization && req.headers.authorization.startsWith('Bearer ') 
                     ? req.headers.authorization.split(" ")[1] 
                     : null);

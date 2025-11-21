@@ -20,7 +20,9 @@ function DocNavbar() {
       try {
         const response = await axios.get("/api/v1/user/getdoctor");
         if (response.data.success) {
-          dispatch(login(response.data.data));
+          // Store doctor profile data in doctor slice, not login slice
+          // dispatch(login) should only be called with auth user data
+          // Profile data is different from auth data
         }
       } catch (error) {
         console.error("Error fetching doctors:", error);

@@ -120,22 +120,33 @@ function Doctor() {
 
     try {
       setLoading(true);
-      const response = await axios.post("/doctorRegistration", formData, {
+      const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3030";
+      const response = await axios.post(`${baseURL}/api/v1/user/doctorRegistration`, formData, {
         withCredentials: true
       });
       
       if (response.data.success) {
         toast.success("Doctor profile completed successfully!");
-        // Redirect to doctor dashboard
+        // Redirect to doctor dashboard with page reload to refresh auth state
         setTimeout(() => {
-          navigate("/doctor/Docdashboard");
-        }, 1500);
+          window.location.href = "/doctor/Docdashboard";
+        }, 1000);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to complete profile. Please try again."
-      );
+      
+      // If user already registered, redirect to dashboard
+      if (error.response?.status === 400 && 
+          error.response?.data?.message?.includes("already registered")) {
+        toast.info("You already have a doctor profile. Redirecting to dashboard...");
+        setTimeout(() => {
+          window.location.href = "/doctor/Docdashboard";
+        }, 1000);
+      } else {
+        toast.error(
+          error.response?.data?.message || "Failed to complete profile. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }

@@ -20,10 +20,11 @@ export const doctorRegistration = async (req, res) => {
       speciality,
       licence,
       clinic,
-      experience, 
+      experience,
+      education
     } = req.body;
 
-    if (!name || !phone || !address || !gender || !age || !speciality || !licence || !clinic || !experience) {
+    if (!name || !phone || !address || !age || !speciality || !licence || !clinic || !experience) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -45,9 +46,9 @@ export const doctorRegistration = async (req, res) => {
       speciality,
       licence,
       clinic,
-      experience, 
-      userId: user.id,
-
+      experience,
+      education,
+      userId: user._id
     });
 
     const currentDoctor = await newDocRegistration.save();
@@ -69,7 +70,7 @@ export const patientsRegistration = async (req, res) => {
         .json({ message: "Unauthorized: User not logged in" });
     }
 
-    const { PatientName, phoneNo, address, age, height, weight } = req.body;
+    const { PatientName, phoneNo, address, age, height, weight, gender, bloodGroup } = req.body;
 
     if (!PatientName || !phoneNo || !address || !age || !height || !weight) {
       return res.status(400).json({ message: "All fields are required." });
@@ -93,7 +94,9 @@ export const patientsRegistration = async (req, res) => {
       age,
       height,
       weight,
-      userId: req.user.id,
+      gender,
+      bloodGroup,
+      userId: req.user._id
     });
 
     await newPatient.save();
@@ -121,7 +124,7 @@ export const getPatients = async (req, res) => {
         .status(401)
         .json({ message: "Unauthorized: User not logged in" });
     }
-    const patients = await Patients.findOne({ userId: req.user.id });
+    const patients = await Patients.findOne({ userId: req.user._id });
     if (!patients) {
       return res.status(404).json({
         success: false,
@@ -162,7 +165,7 @@ export const getDoctors = async (req, res) => {
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized: User not logged in" });
     }
-    const doctors = await Doctor.findOne({ userId: req.user.id });
+    const doctors = await Doctor.findOne({ userId: req.user._id });
     if (!doctors) {
       return res.status(404).json({
         success: false,
@@ -207,3 +210,113 @@ export const getAllDoctors = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
   }
 }
+
+export const updateDoctor = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: User not logged in" });
+    }
+
+    const {
+      name,
+      phone,
+      address,
+      gender,
+      age,
+      speciality,
+      licence,
+      clinic,
+      experience,
+      education
+    } = req.body;
+
+    const doctor = await Doctor.findOne({ userId: user._id });
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor profile not found"
+      });
+    }
+
+    // Update fields
+    if (name) doctor.name = name;
+    if (phone) doctor.phone = phone;
+    if (address) doctor.address = address;
+    if (gender) doctor.gender = gender;
+    if (age) doctor.age = age;
+    if (speciality) doctor.speciality = speciality;
+    if (licence) doctor.licence = licence;
+    if (clinic) doctor.clinic = clinic;
+    if (experience !== undefined) doctor.experience = experience;
+    if (education) doctor.education = education;
+
+    const updatedDoctor = await doctor.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Doctor profile updated successfully",
+      data: updatedDoctor
+    });
+  } catch (error) {
+    console.error("Error updating doctor profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message
+    });
+  }
+};
+
+export const updatePatient = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: User not logged in" });
+    }
+
+    const {
+      PatientName,
+      phoneNo,
+      address,
+      age,
+      height,
+      weight,
+      gender,
+      bloodGroup
+    } = req.body;
+
+    const patient = await Patients.findOne({ userId: user._id });
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient profile not found"
+      });
+    }
+
+    // Update fields
+    if (PatientName) patient.PatientName = PatientName;
+    if (phoneNo) patient.phoneNo = phoneNo;
+    if (address) patient.address = address;
+    if (age) patient.age = age;
+    if (height) patient.height = height;
+    if (weight) patient.weight = weight;
+    if (gender) patient.gender = gender;
+    if (bloodGroup) patient.bloodGroup = bloodGroup;
+
+    const updatedPatient = await patient.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Patient profile updated successfully",
+      data: updatedPatient
+    });
+  } catch (error) {
+    console.error("Error updating patient profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message
+    });
+  }
+};
