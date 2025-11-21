@@ -18,6 +18,7 @@ import Appointment from './pages/Appointment/appointment';
 import AboutUs from './pages/PatientHomePage/AboutUs';
 import PatientProfile from './Components/Profile/patientProfile';
 import PatientAppointments from './pages/PatientHomePage/PatientAppointments';
+import MeetingRoom from './pages/Appointment/MeetingRoom';
 
 // Protected Route Component
 import ProtectedRoute from './components/ProtectedRoute';
@@ -75,6 +76,13 @@ function App() {
           <Route path="patients" element={<Doctor />} />
           <Route path="blogs" element={<Doctor />} />
         </Route>
+
+        {/* Meeting Route - Protected (Both doctor and patient) */}
+        <Route path="/meeting/:appointmentId" element={
+          <ProtectedRoute>
+            <MeetingRoom />
+          </ProtectedRoute>
+        } />
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />

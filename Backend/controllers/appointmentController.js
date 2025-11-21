@@ -1,6 +1,18 @@
 import Appointment from "../models/appointmentSchema.js";
 import Doctor from "../models/docRegistration.js";
 import Patients from "../models/patRegistration.js";
+import crypto from "crypto";
+
+// Generate unique meeting ID
+const generateMeetingId = (appointmentId) => {
+  const hash = crypto.createHash('md5').update(appointmentId.toString()).digest('hex');
+  return `ayurconnect-${hash.substring(0, 12)}`;
+};
+
+// Generate Jitsi meeting URL
+const generateMeetingUrl = (meetingId) => {
+  return `https://meet.jit.si/${meetingId}`;
+};
 
 export const createAppointment = async (req, res) => {
   try {
@@ -111,7 +123,10 @@ export const getPatientAppointments = async (req, res) => {
       speciality: appointment.doctorId?.speciality || 'General Medicine',
       clinic: appointment.doctorId?.clinic || 'Not specified',
       doctorPhone: appointment.doctorId?.phone || 'Not available',
-      type: 'Consultation'
+      type: 'Consultation',
+      meetingId: appointment.meetingId,
+      meetingUrl: appointment.meetingUrl,
+      meetingStatus: appointment.meetingStatus,
     }));
 
     res.status(200).json({
@@ -167,7 +182,10 @@ export const getDoctorAppointments = async (req, res) => {
         patientGender: patientData?.gender || 'Not available',
         speciality: doctor.speciality,
         clinic: doctor.clinic,
-        type: 'Consultation'
+        type: 'Consultation',
+        meetingId: appointment.meetingId,
+        meetingUrl: appointment.meetingUrl,
+        meetingStatus: appointment.meetingStatus,
       };
     }));
 
@@ -298,6 +316,14 @@ export const acceptAppointment = async (req, res) => {
 
     // Update appointment status to confirmed
     appointment.status = 'confirmed';
+    
+    // Generate meeting link when appointment is confirmed
+    if (!appointment.meetingId) {
+      const meetingId = generateMeetingId(appointment._id);
+      appointment.meetingId = meetingId;
+      appointment.meetingUrl = generateMeetingUrl(meetingId);
+    }
+    
     await appointment.save();
 
     res.status(200).json({
@@ -384,3 +410,196 @@ export const declineAppointment = async (req, res) => {
   }
 };
 
+// Get meeting details for an appointment
+export const getMeetingDetails = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Unauthorized: User not logged in" 
+      });
+    }
+
+    const { appointmentId } = req.params;
+
+    const appointment = await Appointment.findById(appointmentId)
+      .populate('doctorId', 'name speciality')
+      .populate('patientId', 'email');
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    // Get patient and doctor data
+    const patientData = await Patients.findOne({ userId: appointment.patientId._id });
+    const doctor = await Doctor.findById(appointment.doctorId._id);
+
+    // Verify user has access to this appointment
+    const isPatient = appointment.patientId._id.toString() === user._id.toString();
+    const isDoctor = doctor && doctor.userId.toString() === user._id.toString();
+
+    if (!isPatient && !isDoctor) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to access this appointment",
+      });
+    }
+
+    // Check if appointment is confirmed
+    if (appointment.status !== 'confirmed') {
+      return res.status(400).json({
+        success: false,
+        message: "Meeting is only available for confirmed appointments",
+      });
+    }
+
+    // Check if meeting link exists
+    if (!appointment.meetingId || !appointment.meetingUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Meeting link not generated yet",
+      });
+    }
+
+    // Check if appointment time is valid (can join 10 minutes before)
+    const appointmentTime = new Date(appointment.appointmentTime);
+    const now = new Date();
+    const tenMinutesBefore = new Date(appointmentTime.getTime() - 10 * 60 * 1000);
+    const twoHoursAfter = new Date(appointmentTime.getTime() + 2 * 60 * 60 * 1000);
+
+    if (now < tenMinutesBefore) {
+      return res.status(400).json({
+        success: false,
+        message: "Meeting can only be joined 10 minutes before scheduled time",
+        canJoinAt: tenMinutesBefore,
+      });
+    }
+
+    if (now > twoHoursAfter && appointment.meetingStatus !== 'ongoing') {
+      return res.status(400).json({
+        success: false,
+        message: "Meeting time has expired",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Meeting details fetched successfully",
+      data: {
+        appointmentId: appointment._id,
+        meetingId: appointment.meetingId,
+        meetingUrl: appointment.meetingUrl,
+        meetingStatus: appointment.meetingStatus,
+        appointmentTime: appointment.appointmentTime,
+        doctorName: appointment.doctorId?.name || 'Doctor',
+        patientName: patientData?.PatientName || 'Patient',
+        userRole: isDoctor ? 'doctor' : 'patient',
+      },
+    });
+  } catch (error) {
+    console.error("Error in getting meeting details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+// Start meeting
+export const startMeeting = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Unauthorized: User not logged in" 
+      });
+    }
+
+    const { appointmentId } = req.params;
+
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    if (appointment.status !== 'confirmed') {
+      return res.status(400).json({
+        success: false,
+        message: "Only confirmed appointments can start meetings",
+      });
+    }
+
+    // Update meeting status
+    appointment.meetingStatus = 'ongoing';
+    if (!appointment.meetingStartedAt) {
+      appointment.meetingStartedAt = new Date();
+    }
+    await appointment.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Meeting started successfully",
+      data: appointment,
+    });
+  } catch (error) {
+    console.error("Error in starting meeting:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+// End meeting
+export const endMeeting = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Unauthorized: User not logged in" 
+      });
+    }
+
+    const { appointmentId } = req.params;
+
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    // Update meeting status
+    appointment.meetingStatus = 'ended';
+    appointment.meetingEndedAt = new Date();
+    appointment.status = 'completed';
+    await appointment.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Meeting ended successfully",
+      data: appointment,
+    });
+  } catch (error) {
+    console.error("Error in ending meeting:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};

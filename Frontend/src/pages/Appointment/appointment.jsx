@@ -106,7 +106,7 @@ const AppointmentPage = () => {
     }
 
     let startTime = new Date(selectedDate);
-    startTime.setHours(9, 0, 0, 0); // Start at 9 AM
+    startTime.setHours(2, 0, 0, 0); // Start at 2 AM for testing
     let endTime = new Date(selectedDate);
     endTime.setHours(17, 0, 0, 0); // End at 5 PM
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { Button, Card, Header } from "../../Components";
@@ -10,6 +11,7 @@ function DoctorAppointments() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const currentUser = useSelector((state) => state.login.currentUser);
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -64,6 +66,24 @@ function DoctorAppointments() {
       console.error("Error declining appointment:", error);
       toast.error("Failed to decline appointment");
     }
+  };
+
+  const handleJoinMeeting = (appointmentId) => {
+    navigate(`/meeting/${appointmentId}`);
+  };
+
+  const canJoinMeeting = (appointment) => {
+    if (appointment.status !== 'confirmed' || !appointment.meetingId) {
+      return false;
+    }
+    
+    // Check if appointment time is within joining window (10 mins before to 2 hours after)
+    const appointmentTime = new Date(appointment.appointmentTime);
+    const now = new Date();
+    const tenMinutesBefore = new Date(appointmentTime.getTime() - 10 * 60 * 1000);
+    const twoHoursAfter = new Date(appointmentTime.getTime() + 2 * 60 * 60 * 1000);
+    
+    return now >= tenMinutesBefore && now <= twoHoursAfter;
   };
 
   const filteredAppointments = appointments.filter(appointment => {
@@ -272,15 +292,26 @@ function DoctorAppointments() {
                     </>
                   )}
                   
-                  {appointment.status === 'confirmed' && (
+                  {appointment.status === 'confirmed' && canJoinMeeting(appointment) && (
                     <Button
                       size="small"
-                      onClick={() => {
-                        // Join meeting functionality
-                        toast.info("Join meeting feature coming soon!");
-                      }}
+                      onClick={() => handleJoinMeeting(appointment._id)}
+                      className="bg-green-600 hover:bg-green-700 text-white"
                     >
+                      <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
                       Start Consultation
+                    </Button>
+                  )}
+
+                  {appointment.status === 'confirmed' && !canJoinMeeting(appointment) && (
+                    <Button
+                      size="small"
+                      disabled
+                      className="bg-gray-400 cursor-not-allowed"
+                    >
+                      Meeting Unavailable
                     </Button>
                   )}
                 </div>

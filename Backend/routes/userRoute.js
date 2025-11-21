@@ -11,7 +11,7 @@ import {
 import {doctorRegistration, getAllDoctors, getDoctors, getPatients, updateDoctor, updatePatient} from "../controllers/registerController.js";
 import {patientsRegistration} from "../controllers/registerController.js";
 import isAuthenticated from "../middleware/isAuthenticated.js";
-import { createAppointment, getAppointments, getPatientAppointments, getDoctorAppointments, cancelAppointment, acceptAppointment, declineAppointment } from "../controllers/appointmentController.js";
+import { createAppointment, getAppointments, getPatientAppointments, getDoctorAppointments, cancelAppointment, acceptAppointment, declineAppointment, getMeetingDetails, startMeeting, endMeeting } from "../controllers/appointmentController.js";
 
 const router = express.Router();
 
@@ -48,5 +48,10 @@ router.get("/getDoctorAppointments", isAuthenticated, getDoctorAppointments);
 router.put("/appointments/:appointmentId/cancel", isAuthenticated, cancelAppointment);
 router.put("/appointments/:appointmentId/accept", isAuthenticated, acceptAppointment);
 router.put("/appointments/:appointmentId/decline", isAuthenticated, declineAppointment);
+
+// Meeting routes (protected)
+router.get("/appointments/:appointmentId/meeting", isAuthenticated, getMeetingDetails);
+router.post("/appointments/:appointmentId/meeting/start", isAuthenticated, startMeeting);
+router.post("/appointments/:appointmentId/meeting/end", isAuthenticated, endMeeting);
 
 export default router;

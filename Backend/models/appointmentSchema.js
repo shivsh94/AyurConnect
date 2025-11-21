@@ -29,6 +29,27 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  meetingId: {
+    type: String,
+    default: null,
+  },
+  meetingUrl: {
+    type: String,
+    default: null,
+  },
+  meetingStatus: {
+    type: String,
+    enum: ["not_started", "ongoing", "ended"],
+    default: "not_started",
+  },
+  meetingStartedAt: {
+    type: Date,
+    default: null,
+  },
+  meetingEndedAt: {
+    type: Date,
+    default: null,
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
