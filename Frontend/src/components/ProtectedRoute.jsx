@@ -3,17 +3,8 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
-  const { isAuthenticated, isDoctor, isPatient, isLoading, isInitialized, currentUser } = useAuth();
+  const { isAuthenticated, isDoctor, isPatient, isLoading, isInitialized } = useAuth();
   const location = useLocation();
-
-  console.log("ProtectedRoute - Auth state:", { 
-    isAuthenticated, 
-    isDoctor, 
-    isPatient, 
-    currentUser: JSON.parse(JSON.stringify(currentUser || {})),
-    allowedRoles,
-    path: location.pathname
-  });
 
   // Show loading spinner while checking authentication
   if (isLoading || !isInitialized) {

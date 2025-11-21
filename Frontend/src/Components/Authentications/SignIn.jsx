@@ -32,11 +32,6 @@ function SignIn() {
       const result = await loginUser(user.email, user.password);
       
       if (result.success) {
-        console.log("Login result:", result);
-        console.log("User data:", result.user);
-        console.log("isDoctor?", result.user.isDoctor);
-        console.log("role?", result.user.role);
-        
         // Check if user has completed their profile
         const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3030";
         
@@ -63,10 +58,8 @@ function SignIn() {
             }
           }
         } catch (error) {
-          console.log("Profile check error:", error.response?.status);
           // If profile doesn't exist (404), redirect to registration
           if (error.response?.status === 404) {
-            console.log("Redirecting to registration...");
             window.location.href = '/registration';
           } else {
             // For other errors, redirect to appropriate dashboard

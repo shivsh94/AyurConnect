@@ -107,14 +107,10 @@ class AuthService {
         }
       );
 
-      console.log("Raw signin response:", response.data);
-      
       if (response.data.success) {
         // Backend uses httpOnly cookies for JWT tokens, not response body tokens
         // Store user data with role information (backend already sends isDoctor)
         const userData = response.data.data;
-        
-        console.log("User data to store:", userData);
         
         localStorage.setItem('user', JSON.stringify(userData));
         
